@@ -1,5 +1,5 @@
-# my-data-guest
-My Data Guest Webpage
+# My Data Guest Website
+My Data Guest Webpage - AI Without the Hype
 
 ## Local development
 
