@@ -17,7 +17,7 @@ export async function fetchEpisodes(): Promise<Episode[]> {
       throw new Error('Failed to fetch RSS feed')
     }
     
-    const episodes: Episode[] = data.items.map((item: { title: string; description: string; link: string; pubDate: string; enclosure?: { url?: string } }, index: number) => {
+    const episodes: Episode[] = data.items.map((item: { title: string; description: string; link: string; pubDate: string; enclosure?: { url?: string }; thumbnail?: string }, index: number) => {
       // Extract episode number from title if available
       const episodeMatch = item.title.match(/(?:Ep\.?\s*|Episode\s*)(\d+)/i)
       const episodeNumber = episodeMatch ? parseInt(episodeMatch[1]) : data.items.length - index
