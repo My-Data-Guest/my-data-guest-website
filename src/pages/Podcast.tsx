@@ -110,10 +110,10 @@ function Podcast() {
                 <Icon.Apple />
               </a>
               <a 
-                href={e.links.youtube || '#'} 
+                href={e.links.youtube || 'https://www.youtube.com/@MyDataGuest'} 
                 aria-label="Watch on YouTube" 
                 title="YouTube"
-                className={`platform-link ${e.links.youtube ? 'active' : 'inactive'}`}
+                className="platform-link"
               >
                 <Icon.YouTube />
               </a>
