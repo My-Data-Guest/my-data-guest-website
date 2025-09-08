@@ -4,6 +4,6 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Set base for GitHub Pages when hosted at /my-data-guest/
-  base: '/my-data-guest/',
+  // Set base for GitHub Pages when hosted at /my-data-guest-website/
+  base: '/my-data-guest-website/',
 })
