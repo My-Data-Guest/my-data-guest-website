@@ -4,12 +4,26 @@ import Home from './pages/Home'
 import Podcast from './pages/Podcast'
 import Learning from './pages/Learning'
 import About from './pages/About'
+import CookieConsent from './components/CookieConsent'
+import { initializeGAWithConsent, grantAnalyticsConsent } from './utils/analytics'
 
 function App() {
   const logoUrl = `${import.meta.env.BASE_URL}text_stacked.png`
   const [active, setActive] = useState('home')
 
   useEffect(() => {
+    // Initialize Google Analytics with consent management
+    initializeGAWithConsent()
+    
+    // Check for existing consent and apply it
+    const consent = localStorage.getItem('cookie-consent')
+    if (consent) {
+      const consentData = JSON.parse(consent)
+      if (consentData.analytics) {
+        grantAnalyticsConsent()
+      }
+    }
+
     const sections = Array.from(document.querySelectorAll('main section')) as HTMLElement[]
     const observer = new IntersectionObserver(
       (entries) => {
@@ -66,6 +80,8 @@ function App() {
       <footer className="footer">
         <span>© {new Date().getFullYear()} My Data Guest</span>
       </footer>
+      
+      <CookieConsent />
     </div>
   )
 }

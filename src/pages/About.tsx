@@ -173,26 +173,21 @@ function About() {
               borderRadius: '16px',
               border: '1px solid var(--border-light)'
             }}>
-              <div style={{
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                background: 'var(--primary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '16px',
-                margin: '0 auto 16px',
-                border: '3px solid var(--primary)'
-              }}>
-                <span style={{
-                  color: 'white',
-                  fontSize: '36px',
-                  fontWeight: '600'
-                }}>
-                  RS
-                </span>
-              </div>
+              <img 
+                src={`${import.meta.env.BASE_URL}rosaria.png`}
+                alt="Rosaria Silipo"
+                style={{
+                  width: '120px',
+                  height: '120px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  objectPosition: 'center 20%',
+                  marginBottom: '16px',
+                  margin: '0 auto 16px',
+                  display: 'block',
+                  border: '3px solid var(--primary)'
+                }}
+              />
               <h4 style={{
                 fontSize: '18px',
                 fontWeight: '600',
