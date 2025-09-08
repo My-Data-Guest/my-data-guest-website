@@ -45,11 +45,6 @@ function Home() {
           src={`${import.meta.env.BASE_URL}logo.png`} 
           alt="My Data Guest" 
           className="hero-logo" 
-          style={{ 
-            width: 280, 
-            height: 280, 
-            objectFit: 'contain'
-          }} 
         />
         <div className="hero-tagline">
           <span className="tagline-primary">AI Without the Hype.</span>
