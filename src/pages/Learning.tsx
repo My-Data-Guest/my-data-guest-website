@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './pages.css'
 import { fetchSubstackPosts } from '../utils/substack'
 import { fetchEpisodes } from '../utils/rss'
+import SEO from '../components/SEO'
 
 type SubstackPost = {
   title: string
@@ -54,18 +55,35 @@ function Learning() {
 
   if (loading) {
     return (
-      <section className="prose">
-        <h1 className="section-title">Learning</h1>
-        <p>Practical guides, notes, and resources for building better data systems and making smarter decisions.</p>
-        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-          Loading latest content...
-        </div>
-      </section>
+      <>
+        <SEO
+          title="Learning - My Data Guest"
+          description="Practical guides, notes, and resources for building better data systems and making smarter decisions."
+          url="https://mydataguest.com#learning"
+          image="/logo.png"
+          type="website"
+        />
+        <section className="prose">
+          <h1 className="section-title">Learning</h1>
+          <p>Practical guides, notes, and resources for building better data systems and making smarter decisions.</p>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+            Loading latest content...
+          </div>
+        </section>
+      </>
     )
   }
 
   return (
-    <section className="prose">
+    <>
+      <SEO
+        title="Learning - My Data Guest"
+        description="Latest articles and insights from the My Data Guest newsletter — practical guides for building better data systems and making smarter decisions."
+        url="https://mydataguest.com#learning"
+        image="/logo.png"
+        type="website"
+      />
+      <section className="prose">
       <h1 className="section-title">Learning</h1>
       <p>Latest articles and insights from the My Data Guest newsletter — practical guides for building better data systems and making smarter decisions.</p>
       
@@ -82,7 +100,8 @@ function Learning() {
             <div className="learning-card-image">
               <img 
                 src={post.image || `${import.meta.env.BASE_URL}logo.png`} 
-                alt={post.title} 
+                alt={`${post.title} - My Data Guest newsletter article`}
+                loading="lazy"
               />
             </div>
             <div className="learning-card-content">
@@ -149,7 +168,8 @@ function Learning() {
           Read more on Substack →
         </a>
       </div>
-    </section>
+      </section>
+    </>
   )
 }
 

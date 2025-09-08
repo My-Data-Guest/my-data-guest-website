@@ -1,0 +1,27 @@
+{
+  "name": "My Data Guest",
+  "short_name": "My Data Guest",
+  "description": "AI Without the Hype. Podcast, Learnings and Stories about building with data.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/text_stacked.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "technology", "business"],
+  "lang": "en",
+  "dir": "ltr"
+}

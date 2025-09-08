@@ -16,7 +16,7 @@ export async function fetchSubstackPosts(): Promise<SubstackPost[]> {
       throw new Error('Failed to fetch Substack feed')
     }
     
-    const posts: SubstackPost[] = data.items.slice(0, 6).map((item: any) => {
+    const posts: SubstackPost[] = data.items.slice(0, 6).map((item: { title: string; description: string; link: string; pubDate: string; thumbnail?: string; enclosure?: { link?: string }; content?: string }) => {
       // Clean up description and truncate
       const cleanDescription = item.description
         .replace(/<[^>]*>/g, '')

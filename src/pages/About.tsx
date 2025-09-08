@@ -1,4 +1,6 @@
 import './pages.css'
+import SEO from '../components/SEO'
+import { generatePersonStructuredData } from '../utils/structuredData'
 
 const SocialIcon = {
   Website: () => (
@@ -25,8 +27,31 @@ const SocialIcon = {
 }
 
 function About() {
+  const alessandroData = generatePersonStructuredData({
+    name: "Alessandro Romano",
+    jobTitle: "Host & Co-founder",
+    description: "Data engineering professional passionate about practical insights and real-world applications.",
+    image: "https://mydataguest.com/alessandro.jpg"
+  })
+  
+  const rosariaData = generatePersonStructuredData({
+    name: "Rosaria Silipo",
+    jobTitle: "Host & Co-founder", 
+    description: "Principal Data Scientist with extensive experience in machine learning and analytics.",
+    image: "https://mydataguest.com/rosaria.png"
+  })
+  
   return (
-    <section className="prose">
+    <>
+      <SEO
+        title="About - My Data Guest"
+        description="Meet Alessandro Romano and Rosaria Silipo, the hosts behind My Data Guest podcast. Learn about their mission to share practical insights about building with data."
+        url="https://mydataguest.com#about"
+        image="/logo.png"
+        type="website"
+        structuredData={[alessandroData, rosariaData]}
+      />
+      <section className="prose">
       <h1 className="section-title">About</h1>
       <div style={{ maxWidth: '600px', margin: '0 auto' }}>
         <p style={{ fontSize: '20px', fontWeight: '500', marginBottom: '32px', color: 'var(--text)' }}>
@@ -67,7 +92,8 @@ function About() {
             }}>
               <img 
                 src={`${import.meta.env.BASE_URL}alessandro.jpg`}
-                alt="Alessandro Romano"
+                alt="Alessandro Romano - Co-host of My Data Guest podcast"
+                loading="lazy"
                 style={{
                   width: '120px',
                   height: '120px',
@@ -175,7 +201,8 @@ function About() {
             }}>
               <img 
                 src={`${import.meta.env.BASE_URL}rosaria.png`}
-                alt="Rosaria Silipo"
+                alt="Rosaria Silipo - Co-host of My Data Guest podcast"
+                loading="lazy"
                 style={{
                   width: '120px',
                   height: '120px',
@@ -314,7 +341,8 @@ function About() {
           </a>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   )
 }
 

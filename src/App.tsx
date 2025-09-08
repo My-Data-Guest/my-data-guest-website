@@ -60,7 +60,12 @@ function App() {
     <div className="app">
       <header className="header">
         <div className="brand">
-          <img src={logoUrl} alt="My Data Guest" className="logo-img" />
+          <img 
+            src={logoUrl} 
+            alt="My Data Guest - AI Without the Hype" 
+            className="logo-img"
+            loading="eager"
+          />
         </div>
         <nav className="nav">
           <a href="#home" className={active === 'home' ? 'active' : undefined}>Home</a>

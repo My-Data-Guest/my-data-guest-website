@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import './pages.css'
 import { fetchEpisodes } from '../utils/rss'
+import SEO from '../components/SEO'
+import { generatePodcastSeriesStructuredData } from '../utils/structuredData'
 
 type Episode = {
   number: number
@@ -38,6 +40,8 @@ const Icon = {
 function Podcast() {
   const [episodes, setEpisodes] = useState<Episode[]>([])
   const [loading, setLoading] = useState(true)
+  
+  const podcastData = generatePodcastSeriesStructuredData()
 
   useEffect(() => {
     const loadEpisodes = async () => {
@@ -56,18 +60,37 @@ function Podcast() {
 
   if (loading) {
     return (
-      <section className="prose">
-        <h1 className="section-title">Podcast</h1>
-        <p>Stories and lessons from people building with data — practical conversations about real challenges and solutions.</p>
-        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-          Loading episodes...
-        </div>
-      </section>
+      <>
+        <SEO
+          title="Podcast - My Data Guest"
+          description="Stories and lessons from people building with data — practical conversations about real challenges and solutions."
+          url="https://mydataguest.com#podcast"
+          image="/logo.png"
+          type="website"
+          structuredData={podcastData}
+        />
+        <section className="prose">
+          <h1 className="section-title">Podcast</h1>
+          <p>Stories and lessons from people building with data — practical conversations about real challenges and solutions.</p>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+            Loading episodes...
+          </div>
+        </section>
+      </>
     )
   }
 
   return (
-    <section className="prose">
+    <>
+      <SEO
+        title="Podcast - My Data Guest"
+        description="Stories and lessons from people building with data — practical conversations about real challenges and solutions."
+        url="https://mydataguest.com#podcast"
+        image="/logo.png"
+        type="website"
+        structuredData={podcastData}
+      />
+      <section className="prose">
       <h1 className="section-title">Podcast</h1>
       <p>Stories and lessons from people building with data — practical conversations about real challenges and solutions.</p>
       <ul className="episode-list">
@@ -75,7 +98,11 @@ function Podcast() {
           <li key={e.number} className="episode-card">
             <div className="episode-image">
               {e.image ? (
-                <img src={e.image} alt={`Episode ${e.number} cover`} />
+                <img 
+                  src={e.image} 
+                  alt={`${e.title} - My Data Guest Episode ${e.number} cover`}
+                  loading="lazy"
+                />
               ) : (
                 <div className="episode-badge">#{e.number}</div>
               )}
@@ -121,7 +148,8 @@ function Podcast() {
           </li>
         ))}
       </ul>
-    </section>
+      </section>
+    </>
   )
 }
 

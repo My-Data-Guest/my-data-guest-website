@@ -1,4 +1,6 @@
 import './pages.css'
+import SEO from '../components/SEO'
+import { generateOrganizationStructuredData, generateWebsiteStructuredData } from '../utils/structuredData'
 
 const Icon = {
   Spotify: () => (
@@ -38,13 +40,26 @@ const Icon = {
 }
 
 function Home() {
+  const organizationData = generateOrganizationStructuredData()
+  const websiteData = generateWebsiteStructuredData()
+  
   return (
-    <section className="hero">
+    <>
+      <SEO
+        title="My Data Guest - AI Without the Hype"
+        description="Practical insights about building with data. Real stories, honest conversations, and actionable advice from practitioners across engineering, product, and research."
+        url="https://mydataguest.com"
+        image="/logo.png"
+        type="website"
+        structuredData={[organizationData, websiteData]}
+      />
+      <section className="hero">
       <div className="hero-content" style={{ textAlign: 'center' }}>
         <img 
           src={`${import.meta.env.BASE_URL}logo.png`} 
-          alt="My Data Guest" 
-          className="hero-logo" 
+          alt="My Data Guest - AI Without the Hype podcast logo" 
+          className="hero-logo"
+          loading="eager"
         />
         <div className="hero-tagline">
           <span className="tagline-primary">AI Without the Hype.</span>
@@ -98,7 +113,8 @@ function Home() {
         </div>
       </div>
       <a href="#podcast" aria-label="Scroll to content" style={{ marginTop: 32, color: 'var(--text-light)', textDecoration: 'none' }}>↓ Scroll</a>
-    </section>
+      </section>
+    </>
   )
 }
 
