@@ -1,3 +1,5 @@
+// © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
+
 import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'

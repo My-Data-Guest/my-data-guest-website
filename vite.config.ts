@@ -1,3 +1,5 @@
+// © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
+
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
