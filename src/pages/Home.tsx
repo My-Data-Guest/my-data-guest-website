@@ -91,7 +91,7 @@ function Home() {
             <Icon.Spotify />
           </a>
           <a 
-            href="https://www.youtube.com/@MyDataGuest" 
+            href="https://www.youtube.com/@MyDataGuest1" 
             aria-label="Watch on YouTube" 
             title="YouTube"
             className="platform-link"

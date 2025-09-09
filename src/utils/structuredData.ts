@@ -11,7 +11,7 @@ export const generateOrganizationStructuredData = () => ({
     "https://mydataguest.substack.com/",
     "https://www.linkedin.com/company/my-data-guest",
     "https://podcasters.spotify.com/pod/show/pigna19908",
-    "https://www.youtube.com/@MyDataGuest",
+    "https://www.youtube.com/@MyDataGuest1",
     "https://podcasts.apple.com/us/podcast/my-data-guest/id1837487759"
   ],
   "founder": [
