@@ -10,7 +10,7 @@ export type Episode = {
 export async function fetchEpisodes(): Promise<Episode[]> {
   try {
     // For GitHub Pages hosting, we'll use RSS2JSON service which supports CORS
-    const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://anchor.fm/s/108aca4c8/podcast/rss')}`)
+    const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent('https://api.substack.com/feed/podcast/6037963.rss')}`)
     const data = await response.json()
     
     if (data.status !== 'ok') {
