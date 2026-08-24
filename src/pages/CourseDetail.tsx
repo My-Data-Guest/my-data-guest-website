@@ -103,6 +103,26 @@ function CourseDetail() {
                 </div>
               )}
 
+              {/* Directly under the promise, because that is where it qualifies
+                  something. Buried further down it would read as a disclaimer. */}
+              {course.scope && (
+                <section aria-labelledby="course-scope-title">
+                  <h2 id="course-scope-title" className="subsection-title">
+                    What this course is &mdash; and isn&rsquo;t
+                  </h2>
+                  <div className="course-scope">
+                    <div>
+                      <p className="course-scope-label">It is</p>
+                      <p className="course-scope-text">{course.scope.is}</p>
+                    </div>
+                    <div className="course-scope-not">
+                      <p className="course-scope-label">It isn&rsquo;t</p>
+                      <p className="course-scope-text">{course.scope.isNot}</p>
+                    </div>
+                  </div>
+                </section>
+              )}
+
               {course.stack && (
                 <section aria-labelledby="course-stack-title">
                   <h2 id="course-stack-title" className="subsection-title">

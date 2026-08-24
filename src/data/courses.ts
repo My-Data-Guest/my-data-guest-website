@@ -55,6 +55,15 @@ export interface Course {
   format?: string
   /** Longer intro paragraph on the detail page. */
   summary?: string
+  /**
+   * The scope boundary, set out before anyone pays.
+   *
+   * A course that covers the whole path to production necessarily gives each
+   * component one pass rather than a deep dive. Someone who enrolled expecting a
+   * fortnight on RAG alone would be right to feel misled, so the limit is stated
+   * next to the promise instead of being discovered in Lesson 3.
+   */
+  scope?: { is: string; isNot: string }
   duration?: string
   level?: string
   /** Practice between sessions, so the real time commitment is not a surprise. */
@@ -137,6 +146,10 @@ export const COURSES: Course[] = [
     format: 'Live on Zoom',
     summary:
       'Most “AI agent” material stops at a demo. This one does not. Over two weekends you build one real system — an AI Knowledge Assistant that searches the web, answers from your own documents, remembers the conversation and runs as a deployed app. We start from a plain model call and add one capability at a time, so you always understand why each piece exists. Lessons are on Saturday and Sunday afternoons on purpose: you should not have to burn holiday to learn this.',
+    scope: {
+      is: 'A guided path from zero to something running in production. You meet every component an agent actually needs — the ReAct loop, LangGraph, tools, RAG, memory, MCP, tracing, deployment — and you leave with all of them working together in one system you built yourself.',
+      isNot: 'A deep dive into any single one of those components. There is a fortnight of material in RAG alone, and here it gets one focused pass: enough to build it, ground it and know what to read next. If you want that depth rather than the whole path, this is the wrong course — and better you know it before you pay than in Lesson 3.',
+    },
     duration: '4 live lessons of 1h30, plus 2 office hours of 30 min',
     level: 'Intermediate — you write Python comfortably',
     homework: 'About 2 hours of practice',
