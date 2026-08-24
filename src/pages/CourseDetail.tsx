@@ -5,7 +5,15 @@ import './pages.css'
 import SEO from '../components/SEO'
 import JsonLd from '../components/JsonLd'
 import StripeBuyButton from '../components/StripeBuyButton'
-import { COURSE_STATUS, courseFacts, getCourse, isScheduled, type Course } from '../data/courses'
+import {
+  COURSE_STATUS,
+  coursePath,
+  courseFacts,
+  getCourse,
+  getRenamedCourse,
+  isScheduled,
+  type Course,
+} from '../data/courses'
 import { generateCourseStructuredData, PLATFORMS, SITE_URL } from '../utils/structuredData'
 import { formatDate } from '../utils/text'
 
@@ -21,13 +29,18 @@ const SESSION_DATE: Intl.DateTimeFormatOptions = {
  *
  * Two columns: the programme on the left, a sticky enrolment card on the right so
  * the call to action stays in view however long the syllabus gets. Every block
- * below the header is optional — an announced-but-unwritten course (like
- * "From 0 to Agentic AI" today) renders as the header plus the card, and fills
- * itself in as fields are added in src/data/courses.ts.
+ * below the header is optional — an announced-but-unwritten course renders as the
+ * header plus the card, and fills itself in as fields are added in
+ * src/data/courses.ts.
  */
 function CourseDetail() {
   const { slug } = useParams()
   const course = slug ? getCourse(slug) : undefined
+
+  // A URL the course used to live at, still out there in the newsletter and on
+  // LinkedIn. There is no server to 301 it, so redirect on the client.
+  const renamed = !course && slug ? getRenamedCourse(slug) : undefined
+  if (renamed) return <Navigate to={coursePath(renamed)} replace />
 
   // Unknown slug: send visitors to the catalogue rather than a dead end.
   if (!course) return <Navigate to="/courses" replace />

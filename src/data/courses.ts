@@ -32,8 +32,21 @@ export interface CourseModule {
 }
 
 export interface Course {
-  /** URL segment: /courses/<slug>. Never change it once a course is announced. */
+  /**
+   * URL segment: /courses/<slug>. Avoid changing it once a course is announced —
+   * and if you must, move the old value into `previousSlugs` so the address that
+   * went out in the newsletter keeps working.
+   */
   slug: string
+  /**
+   * Slugs this course used to live at.
+   *
+   * The site is static, so there is no server to issue a 301: CourseDetail
+   * redirects these to the canonical URL on the client instead. Keep them
+   * forever — they cost one array entry, and the alternative is a paying
+   * visitor landing on the catalogue wondering where the course went.
+   */
+  previousSlugs?: string[]
   title: string
   /** One line, used on the cards and as the detail-page lead. */
   tagline: string
@@ -113,8 +126,11 @@ export const COURSE_STATUS: Record<CourseStatus, { label: string; className: str
 
 export const COURSES: Course[] = [
   {
-    slug: 'from-0-to-agentic-ai',
-    title: 'From 0 to Agentic AI',
+    slug: 'agentic-ai-from-idea-to-production',
+    // Renamed from "From 0 to Agentic AI", whose URL is already in the newsletter
+    // and on LinkedIn. It redirects here rather than 404ing.
+    previousSlugs: ['from-0-to-agentic-ai'],
+    title: 'Agentic AI: From Idea to Production',
     tagline:
       'Four live weekend sessions that take you from a single LLM call to a deployed AI agent with tools, RAG and memory.',
     status: 'enrolling',
@@ -267,6 +283,10 @@ export const COURSES: Course[] = [
 export const coursePath = (course: Course) => `/courses/${course.slug}`
 
 export const getCourse = (slug: string) => COURSES.find((course) => course.slug === slug)
+
+/** The course a retired URL used to point at, so it can be redirected. */
+export const getRenamedCourse = (slug: string) =>
+  COURSES.find((course) => course.previousSlugs?.includes(slug))
 
 /** The facts strip: label/value pairs a course actually has, in a fixed order. */
 export const courseFacts = (course: Course): [string, string][] =>
