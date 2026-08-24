@@ -1,103 +1,79 @@
-import { useEffect } from 'react'
+// © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
-interface SEOProps {
-  title?: string
-  description?: string
+import { useEffect } from 'react'
+import { SITE_URL } from '../utils/structuredData'
+
+export interface DocumentHeadOptions {
+  title: string
+  description: string
+  /** Absolute URL, or a path relative to the site root. */
   image?: string
+  imageAlt?: string
   url?: string
   type?: 'website' | 'article' | 'profile'
-  structuredData?: object | object[]
 }
 
-export const useDocumentHead = ({ 
-  title = 'My Data Guest - AI Without the Hype',
-  description = 'Practical insights about building with data. Real stories, honest conversations, and actionable advice from practitioners across engineering, product, and research.',
-  image = '/logo.png',
-  url = 'https://mydataguest.com',
+const setMeta = (attr: 'name' | 'property', key: string, content: string) => {
+  const selector = `meta[${attr}="${key}"]`
+  let meta = document.head.querySelector<HTMLMetaElement>(selector)
+
+  if (!meta) {
+    meta = document.createElement('meta')
+    meta.setAttribute(attr, key)
+    document.head.appendChild(meta)
+  }
+  meta.content = content
+}
+
+const setCanonical = (href: string) => {
+  let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+
+  if (!link) {
+    link = document.createElement('link')
+    link.rel = 'canonical'
+    document.head.appendChild(link)
+  }
+  link.href = href
+}
+
+/**
+ * Keeps the document title, meta description and social-card tags in sync.
+ *
+ * Structured data is deliberately not handled here — see <JsonLd /> — so that
+ * each block can be updated independently instead of the last render winning.
+ */
+export const useDocumentHead = ({
+  title,
+  description,
+  image = '/og-image.png',
+  imageAlt = 'My Data Guest — AI Without the Hype',
+  url = `${SITE_URL}/`,
   type = 'website',
-  structuredData
-}: SEOProps) => {
+}: DocumentHeadOptions) => {
   useEffect(() => {
     const fullTitle = title.includes('My Data Guest') ? title : `${title} | My Data Guest`
-    const fullImageUrl = image.startsWith('http') ? image : `https://mydataguest.com${image}`
-    
-    // Update document title
+    const imageUrl = image.startsWith('http') ? image : `${SITE_URL}${image}`
+
     document.title = fullTitle
-    
-    // Helper function to update or create meta tags
-    const updateMetaTag = (property: string, content: string, isProperty = false) => {
-      const selector = isProperty ? `meta[property="${property}"]` : `meta[name="${property}"]`
-      let meta = document.querySelector(selector) as HTMLMetaElement
-      
-      if (!meta) {
-        meta = document.createElement('meta')
-        if (isProperty) {
-          meta.setAttribute('property', property)
-        } else {
-          meta.setAttribute('name', property)
-        }
-        document.head.appendChild(meta)
-      }
-      meta.content = content
-    }
-    
-    // Helper function to update or create link tags
-    const updateLinkTag = (rel: string, href: string) => {
-      let link = document.querySelector(`link[rel="${rel}"]`) as HTMLLinkElement
-      
-      if (!link) {
-        link = document.createElement('link')
-        link.rel = rel
-        document.head.appendChild(link)
-      }
-      link.href = href
-    }
-    
-    // Basic Meta Tags
-    updateMetaTag('description', description)
-    updateMetaTag('keywords', 'data engineering, AI, machine learning, podcast, analytics, data science, product management')
-    updateMetaTag('author', 'Alessandro Romano, Rosaria Silipo')
-    updateMetaTag('robots', 'index, follow')
-    updateLinkTag('canonical', url)
-    
-    // Open Graph Tags
-    updateMetaTag('og:title', fullTitle, true)
-    updateMetaTag('og:description', description, true)
-    updateMetaTag('og:image', fullImageUrl, true)
-    updateMetaTag('og:url', url, true)
-    updateMetaTag('og:type', type, true)
-    updateMetaTag('og:site_name', 'My Data Guest', true)
-    
-    // Twitter Card Tags
-    updateMetaTag('twitter:card', 'summary_large_image')
-    updateMetaTag('twitter:title', fullTitle)
-    updateMetaTag('twitter:description', description)
-    updateMetaTag('twitter:image', fullImageUrl)
-    updateMetaTag('twitter:site', '@mydataguest')
-    
-    // Structured Data
-    if (structuredData) {
-      // Remove existing structured data scripts
-      const existingScripts = document.querySelectorAll('script[type="application/ld+json"]')
-      existingScripts.forEach(script => script.remove())
-      
-      // Add new structured data
-      const dataArray = Array.isArray(structuredData) ? structuredData : [structuredData]
-      dataArray.forEach((data, index) => {
-        const script = document.createElement('script')
-        script.type = 'application/ld+json'
-        script.text = JSON.stringify(data)
-        script.id = `structured-data-${index}`
-        document.head.appendChild(script)
-      })
-    }
-    
-    // Cleanup function to remove added elements when component unmounts
-    return () => {
-      // We don't need to clean up meta tags as they'll be replaced by other pages
-      // But we should clean up structured data scripts
-      const scripts = document.querySelectorAll('script[id^="structured-data-"]')
-      scripts.forEach(script => script.remove())
-    }
-  }, [title, description, image, url, type, structuredData])
+
+    setMeta('name', 'description', description)
+    setMeta('name', 'author', 'Alessandro Romano, Rosaria Silipo')
+    setMeta('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1')
+    setCanonical(url)
+
+    setMeta('property', 'og:title', fullTitle)
+    setMeta('property', 'og:description', description)
+    setMeta('property', 'og:image', imageUrl)
+    setMeta('property', 'og:image:alt', imageAlt)
+    setMeta('property', 'og:url', url)
+    setMeta('property', 'og:type', type)
+    setMeta('property', 'og:site_name', 'My Data Guest')
+    setMeta('property', 'og:locale', 'en_US')
+
+    setMeta('name', 'twitter:card', 'summary_large_image')
+    setMeta('name', 'twitter:title', fullTitle)
+    setMeta('name', 'twitter:description', description)
+    setMeta('name', 'twitter:image', imageUrl)
+    setMeta('name', 'twitter:image:alt', imageAlt)
+  }, [title, description, image, imageAlt, url, type])
 }

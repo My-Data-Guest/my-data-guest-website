@@ -1,158 +1,146 @@
+// © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
+
 import { useEffect, useState } from 'react'
 import './pages.css'
-import { fetchEpisodes } from '../utils/rss'
-import SEO from '../components/SEO'
-import { generatePodcastSeriesStructuredData } from '../utils/structuredData'
+import { fetchEpisodes, type Episode } from '../utils/rss'
+import { formatDate } from '../utils/text'
+import JsonLd from '../components/JsonLd'
+import { SpotifyIcon, ApplePodcastsIcon, YouTubeIcon } from '../components/Icons'
+import { generateEpisodeListStructuredData, PLATFORMS } from '../utils/structuredData'
 
-type Episode = {
-  number: number
-  title: string
-  summary: string
-  links: { spotify?: string; apple?: string; youtube?: string }
-  pubDate: string
-  image?: string
-}
+/** The section is a teaser — the full back catalogue lives on the platforms. */
+const VISIBLE_EPISODES = 3
 
-const Icon = {
-  Spotify: () => (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="10" fill="#1DB954" />
-      <path d="M7.5 10.2c3.2-1.1 6.8-.9 9.5.6" stroke="#fff" strokeWidth="1.6" strokeLinecap="round"/>
-      <path d="M7.7 13.1c2.6-.8 5.5-.6 7.7.5" stroke="#fff" strokeWidth="1.4" strokeLinecap="round"/>
-      <path d="M7.9 15.7c2-.6 4.1-.5 5.8.3" stroke="#fff" strokeWidth="1.4" strokeLinecap="round"/>
-    </svg>
-  ),
-  Apple: () => (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="10" fill="#A855F7" />
-      <path d="M15.8 9.8c-.4-.3-1.5-.8-2.8-.8-1.5 0-2.7.6-3.5.6-.7 0-1.8-.6-3-.6-1.5 0-2.9.9-3.6 2.2-1.6 2.8-.4 6.9 1.1 9.2.7 1.1 1.6 2.4 2.7 2.4 1 0 1.4-.7 2.6-.7s1.5.7 2.6.7c1.1 0 1.9-1.2 2.6-2.3.5-.8.9-1.6 1.2-2.5-2.6-1-3.1-4.7-.9-6.2z" fill="#fff"/>
-      <path d="M13.2 7.5c.6-.7.9-1.7.8-2.7-.8 0-1.7.5-2.3 1.1-.5.6-.9 1.6-.8 2.5.9.1 1.7-.4 2.3-0.9z" fill="#fff"/>
-    </svg>
-  ),
-  YouTube: () => (
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect x="3" y="6" width="18" height="12" rx="3" fill="#FF0033"/>
-      <path d="M10 9v6l5-3-5-3z" fill="#fff"/>
-    </svg>
-  ),
-}
+const SUBSCRIBE_LINKS = [
+  { href: PLATFORMS.spotify, label: 'Listen on Spotify', Icon: SpotifyIcon },
+  { href: PLATFORMS.apple, label: 'Listen on Apple Podcasts', Icon: ApplePodcastsIcon },
+  { href: PLATFORMS.youtube, label: 'Watch on YouTube', Icon: YouTubeIcon },
+]
 
 function Podcast() {
   const [episodes, setEpisodes] = useState<Episode[]>([])
   const [loading, setLoading] = useState(true)
-  
-  const podcastData = generatePodcastSeriesStructuredData()
 
   useEffect(() => {
-    const loadEpisodes = async () => {
-      try {
-        const fetchedEpisodes = await fetchEpisodes()
-        setEpisodes(fetchedEpisodes)
-      } catch (error) {
-        console.error('Error loading episodes:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
+    let cancelled = false
 
-    loadEpisodes()
+    fetchEpisodes()
+      .then((fetched) => {
+        // fetchEpisodes sorts newest first, so this is the most recent three.
+        if (!cancelled) setEpisodes(fetched.slice(0, VISIBLE_EPISODES))
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  if (loading) {
-    return (
-      <>
-        <SEO
-          title="Podcast - My Data Guest"
-          description="Stories and lessons from people building with data — practical conversations about real challenges and solutions."
-          url="https://mydataguest.com#podcast"
-          image="/logo.png"
-          type="website"
-          structuredData={podcastData}
-        />
-        <section className="prose">
-          <h1 className="section-title">Podcast</h1>
-          <p>Stories and lessons from people building with data — practical conversations about real challenges and solutions.</p>
-          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
-            Loading episodes...
-          </div>
-        </section>
-      </>
-    )
-  }
-
   return (
-    <>
-      <SEO
-        title="Podcast - My Data Guest"
-        description="Stories and lessons from people building with data — practical conversations about real challenges and solutions."
-        url="https://mydataguest.com#podcast"
-        image="/logo.png"
-        type="website"
-        structuredData={podcastData}
-      />
-      <section className="prose">
-      <h1 className="section-title">Podcast</h1>
-      <p>Stories and lessons from people building with data — practical conversations about real challenges and solutions.</p>
-      <ul className="episode-list">
-        {episodes.map((e) => (
-          <li key={e.number} className="episode-card">
-            <div className="episode-image">
-              {e.image ? (
-                <img 
-                  src={e.image} 
-                  alt={`${e.title} - My Data Guest Episode ${e.number} cover`}
-                  loading="lazy"
-                />
-              ) : (
-                <div className="episode-badge">#{e.number}</div>
-              )}
-            </div>
-            <div className="episode-content">
-              <div className="episode-header">
-                <span className="episode-number">Episode {e.number}</span>
-                <h3 className="episode-title">{e.title}</h3>
-              </div>
-              <p className="episode-summary">
-                {e.summary}
-                {e.links.spotify && (
-                  <><a href={e.links.spotify} className="episode-more">...more</a></>
-                )}
-              </p>
-            </div>
-            <div className="episode-platforms">
-              <a 
-                href={e.links.spotify || '#'} 
-                aria-label="Listen on Spotify" 
-                title="Spotify"
-                className={`platform-link ${e.links.spotify ? 'active' : 'inactive'}`}
-              >
-                <Icon.Spotify />
-              </a>
-              <a 
-                href={e.links.apple || 'https://podcasts.apple.com/us/podcast/my-data-guest/id1837487759'} 
-                aria-label="Listen on Apple Podcasts" 
-                title="Apple Podcasts"
-                className="platform-link"
-              >
-                <Icon.Apple />
-              </a>
-              <a 
-                href={e.links.youtube || 'https://www.youtube.com/@MyDataGuest1'} 
-                aria-label="Watch on YouTube" 
-                title="YouTube"
-                className="platform-link"
-              >
-                <Icon.YouTube />
-              </a>
-            </div>
+    <div className="prose">
+      {episodes.length > 0 && (
+        <JsonLd id="episodes" data={generateEpisodeListStructuredData(episodes)} />
+      )}
+
+      <h2 id="podcast-title" className="section-title">
+        Podcast
+      </h2>
+      <p>
+        Stories and lessons from people building with data — practical conversations about real
+        challenges and real solutions.
+      </p>
+
+      <ul className="platform-row">
+        {SUBSCRIBE_LINKS.map(({ href, label, Icon }) => (
+          <li key={label}>
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              title={label}
+              className="platform-link"
+            >
+              <Icon size={32} />
+            </a>
           </li>
         ))}
       </ul>
-      </section>
-    </>
+
+      {loading ? (
+        <p className="feed-status" role="status">
+          Loading episodes…
+        </p>
+      ) : (
+        <ul className="episode-list">
+          {episodes.map((episode) => {
+            const published = formatDate(episode.pubDate)
+
+            return (
+              <li key={episode.url} className="episode-card">
+                <div className="episode-image">
+                  {episode.image ? (
+                    <img
+                      src={episode.image}
+                      alt=""
+                      width={168}
+                      height={168}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <span className="episode-badge">
+                      {episode.number ? `#${episode.number}` : 'MDG'}
+                    </span>
+                  )}
+                </div>
+                <div className="episode-content">
+                  <p className="episode-meta">
+                    <span className="episode-number">
+                      {episode.number ? `Episode ${episode.number}` : 'Bonus episode'}
+                    </span>
+                    {published && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <time dateTime={new Date(episode.pubDate).toISOString()}>{published}</time>
+                      </>
+                    )}
+                  </p>
+                  <h3 className="episode-title">
+                    <a href={episode.url} target="_blank" rel="noopener noreferrer">
+                      {episode.displayTitle}
+                    </a>
+                  </h3>
+                  <p className="episode-summary">{episode.summary}</p>
+                </div>
+                <a
+                  href={episode.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn episode-cta"
+                >
+                  Listen
+                </a>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+
+      <p className="section-cta">
+        <a
+          href={PLATFORMS.substack}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn primary"
+        >
+          All episodes on Substack →
+        </a>
+      </p>
+    </div>
   )
 }
 
 export default Podcast
-
-

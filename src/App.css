@@ -1,170 +1,261 @@
 /* © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE. */
 
-/* Modern elegant design system with orange & teal palette */
+/* Design system: teal primary with an orange accent. */
 :root {
   --primary: #02738d;
-  --primary-light: #0891b2; 
+  --primary-light: #0891b2;
   --primary-dark: #164e63;
+  --primary-tint: rgba(2, 115, 141, 0.05);
+  --primary-tint-strong: rgba(2, 115, 141, 0.09);
   --accent: #ffa82e;
-  --accent-light: #ffb84d;
   --accent-dark: #e6951c;
-  --accent-gradient: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
   --surface: #ffffff;
   --surface-elevated: #fefdf9;
-  --surface-warm: #fff7ed;
-  --surface-cool: #ecfeff;
   --border: #cbd5e1;
   --border-light: #e2e8f0;
-  --border-warm: #fed7aa;
-  --border-cool: #a5f3fc;
+  --border-hairline: rgba(15, 23, 42, 0.08);
   --text: #0f172a;
   --text-muted: #475569;
-  --text-light: #64748b;
-  --shadow-sm: 0 1px 2px 0 rgb(2 115 141 / 0.05);
-  --shadow: 0 4px 6px -1px rgb(2 115 141 / 0.1), 0 2px 4px -2px rgb(2 115 141 / 0.05);
-  --shadow-lg: 0 10px 15px -3px rgb(2 115 141 / 0.15), 0 4px 6px -4px rgb(2 115 141 / 0.05);
-  --shadow-xl: 0 20px 25px -5px rgb(2 115 141 / 0.2), 0 8px 10px -6px rgb(2 115 141 / 0.05);
+  --text-light: #5b6b80;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.05);
+  --shadow-card-hover: 0 8px 24px rgba(2, 115, 141, 0.12);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --header-height: 80px;
   --blur: 16px;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 .app {
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: #ffffff;
+  /* The implicit `auto` column sizes to max-content, which let the sections push
+     past the viewport and produced a horizontal scrollbar on narrow screens. */
+  grid-template-columns: minmax(0, 1fr);
+  background: var(--surface);
   color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
 }
 
+/* Keyboard users land here first. */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1100;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 32px;
+  gap: 16px;
+  padding: 16px 32px;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(var(--blur));
-  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+  border-bottom: 1px solid transparent;
   z-index: 1000;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: padding 0.25s ease, background 0.25s ease, border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .header.scrolled {
-  padding: 16px 32px;
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  padding: 10px 32px;
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom-color: var(--border-hairline);
+  box-shadow: 0 1px 12px rgba(15, 23, 42, 0.05);
 }
 
-.brand { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px;
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
-.brand:hover {
-  transform: scale(1.05);
+.brand:hover .brand-mark {
+  transform: scale(1.06);
 }
 
-.logo-img { 
-  width: 40px; 
-  height: 40px; 
-  object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+/* The logo file is a three-line stacked wordmark; at header size it is
+   illegible, so the brand name is set in type next to the door mark instead. */
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--primary);
+  white-space: nowrap;
 }
 
-.nav { 
-  display: flex; 
-  align-items: center; 
-  gap: 2px; 
+.brand-name span {
+  color: var(--accent-dark);
 }
 
-.nav a { 
-  color: var(--text-muted); 
-  text-decoration: none; 
-  font-weight: 500; 
-  padding: 8px 16px; 
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav a {
+  color: var(--text-muted);
+  padding: 8px 14px;
   border-radius: 8px;
-  transition: all 0.2s ease;
-  position: relative;
+  font-weight: 500;
   font-size: 15px;
   letter-spacing: -0.01em;
+  transition: color 0.2s ease, background 0.2s ease;
 }
 
-.nav a:hover { 
+.nav a:hover {
   color: var(--primary);
-  background: rgba(2, 115, 141, 0.05);
+  background: var(--primary-tint);
 }
 
-.nav a.active { 
+.nav a.active {
   color: var(--primary);
-  background: rgba(2, 115, 141, 0.08);
+  background: var(--primary-tint-strong);
   font-weight: 600;
 }
 
-.content { 
-  padding: 0;
-}
-
-.section-title { 
+/* Section headings */
+.section-title {
   font-size: clamp(28px, 4vw, 36px);
   font-weight: 700;
-  margin-bottom: 16px;
+  margin: 0 0 24px;
+  padding-bottom: 12px;
   position: relative;
   display: inline-block;
-  color: #1e293b;
+  color: var(--text);
 }
 
-.section-title::after { 
-  content: ""; 
-  position: absolute; 
-  left: 0; 
-  bottom: -8px; 
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
   width: 60px;
-  height: 4px; 
+  height: 4px;
   background: var(--primary);
   border-radius: 2px;
-  opacity: 0.8;
 }
 
-.footer { 
-  padding: 40px 32px; 
+.subsection-title {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  margin: 56px 0 32px;
+  color: var(--text);
+}
+
+/* Full-bleed alternating bands */
+.band {
+  padding: 120px 0;
+  background: var(--surface);
+}
+
+.band > * {
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.band.band-b {
+  background: rgba(2, 115, 141, 0.04);
+}
+
+.band.band-c {
+  background: rgba(255, 168, 46, 0.05);
+}
+
+/* Footer */
+.footer {
+  padding: 40px 32px;
   background: var(--surface-elevated);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-light);
   color: var(--text-muted);
   text-align: center;
   font-size: 14px;
 }
 
-/* Minimal section styling */
-.band { 
-  padding: 120px 0; 
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   margin: 0;
-  background: var(--surface);
-  position: relative;
-  width: 100vw;
-  margin-left: 50%;
-  transform: translateX(-50%);
 }
 
-.band > * {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 32px;
+.link-button {
+  color: var(--text-muted);
+  font-size: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+  transition: color 0.2s ease;
 }
 
-.band.band-b { 
-  background: rgba(2, 115, 141, 0.04);
+.link-button:hover {
+  color: var(--primary);
 }
 
-.band.band-c { 
-  background: rgba(255, 168, 46, 0.04);
+@media (max-width: 640px) {
+  .header,
+  .header.scrolled {
+    padding: 12px 16px;
+  }
+
+  .brand-name {
+    display: none;
+  }
+
+  /* Without this the four nav links squeeze the brand and the door mark ends up
+     rendered at half width. The nav gives up the space instead. */
+  .brand {
+    flex-shrink: 0;
+  }
+
+  .nav a {
+    padding: 8px 9px;
+    font-size: 14px;
+  }
+
+  .band > * {
+    padding: 0 20px;
+  }
 }

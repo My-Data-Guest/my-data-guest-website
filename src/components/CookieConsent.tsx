@@ -1,129 +1,112 @@
-import { useState, useEffect } from 'react';
-import { grantAnalyticsConsent, denyAnalyticsConsent } from '../utils/analytics';
-import './CookieConsent.css';
+// © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
-const CONSENT_KEY = 'cookie-consent';
+import { useCallback, useEffect, useState } from 'react'
+import { grantAnalyticsConsent, denyAnalyticsConsent } from '../utils/analytics'
+import { onOpenCookiePreferences, readConsent, writeConsent } from '../utils/cookiePreferences'
+import './CookieConsent.css'
 
 export default function CookieConsent() {
-  const [showBanner, setShowBanner] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
+  const [showBanner, setShowBanner] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
 
   useEffect(() => {
-    const consent = localStorage.getItem(CONSENT_KEY);
-    if (!consent) {
-      setShowBanner(true);
-    }
-    
-    // For testing - log current consent status
-    console.log('Cookie consent status:', consent ? JSON.parse(consent) : 'No consent stored');
-  }, []);
+    if (!readConsent()) setShowBanner(true)
 
-  const handleAcceptAll = () => {
-    localStorage.setItem(CONSENT_KEY, JSON.stringify({
-      necessary: true,
-      analytics: true,
-      timestamp: Date.now()
-    }));
-    grantAnalyticsConsent();
-    setShowBanner(false);
-  };
+    return onOpenCookiePreferences(() => {
+      setShowDetails(true)
+      setShowBanner(true)
+    })
+  }, [])
 
-  const handleRejectAll = () => {
-    localStorage.setItem(CONSENT_KEY, JSON.stringify({
-      necessary: true,
-      analytics: false,
-      timestamp: Date.now()
-    }));
-    denyAnalyticsConsent();
-    setShowBanner(false);
-  };
+  const save = useCallback((analytics: boolean) => {
+    writeConsent(analytics)
 
-  const handleSavePreferences = (analytics: boolean) => {
-    localStorage.setItem(CONSENT_KEY, JSON.stringify({
-      necessary: true,
-      analytics,
-      timestamp: Date.now()
-    }));
-    
     if (analytics) {
-      grantAnalyticsConsent();
+      grantAnalyticsConsent()
     } else {
-      denyAnalyticsConsent();
+      denyAnalyticsConsent()
     }
-    
-    setShowBanner(false);
-    setShowDetails(false);
-  };
 
-  if (!showBanner) return null;
+    setShowBanner(false)
+    setShowDetails(false)
+  }, [])
+
+  useEffect(() => {
+    if (!showBanner) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') save(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [showBanner, save])
+
+  if (!showBanner) return null
 
   return (
     <div className="cookie-consent-overlay">
-      <div className="cookie-consent-banner">
-        {!showDetails ? (
-          <>
-            <div className="cookie-consent-content">
-              <div className="cookie-consent-text">
-                <h3>We value your privacy</h3>
-                <p>
-                  We use cookies to enhance your browsing experience and analyze our traffic. 
-                  By clicking "Accept All", you consent to our use of cookies for analytics purposes.
-                </p>
-              </div>
-              <div className="cookie-consent-actions">
-                <button 
-                  className="btn-secondary" 
-                  onClick={() => setShowDetails(true)}
-                >
-                  Customize
-                </button>
-                <button 
-                  className="btn-secondary" 
-                  onClick={handleRejectAll}
-                >
-                  Reject All
-                </button>
-                <button 
-                  className="btn-primary" 
-                  onClick={handleAcceptAll}
-                >
-                  Accept All
-                </button>
-              </div>
-            </div>
-          </>
+      <div
+        className="cookie-consent-banner"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cookie-consent-title"
+      >
+        {showDetails ? (
+          <CookieDetails onSave={save} onBack={() => setShowDetails(false)} />
         ) : (
-          <CookieDetails onSave={handleSavePreferences} onBack={() => setShowDetails(false)} />
+          <div className="cookie-consent-content">
+            <div className="cookie-consent-text">
+              <h3 id="cookie-consent-title">We value your privacy</h3>
+              <p>
+                We use cookies to understand how the site is used. Analytics cookies are optional and
+                stay off until you allow them.
+              </p>
+            </div>
+            <div className="cookie-consent-actions">
+              <button className="btn-secondary" onClick={() => setShowDetails(true)}>
+                Customise
+              </button>
+              <button className="btn-secondary" onClick={() => save(false)}>
+                Reject all
+              </button>
+              <button className="btn-primary" onClick={() => save(true)}>
+                Accept all
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>
-  );
+  )
 }
 
 interface CookieDetailsProps {
-  onSave: (analytics: boolean) => void;
-  onBack: () => void;
+  onSave: (analytics: boolean) => void
+  onBack: () => void
 }
 
 function CookieDetails({ onSave, onBack }: CookieDetailsProps) {
-  const [analyticsEnabled, setAnalyticsEnabled] = useState(false);
+  // Reflect the visitor's current choice rather than always starting at "off".
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(() => readConsent()?.analytics ?? false)
 
   return (
     <div className="cookie-details">
       <div className="cookie-details-header">
-        <button className="back-button" onClick={onBack}>← Back</button>
-        <h3>Cookie Preferences</h3>
+        <button className="back-button" onClick={onBack}>
+          ← Back
+        </button>
+        <h3 id="cookie-consent-title">Cookie preferences</h3>
       </div>
-      
+
       <div className="cookie-details-content">
         <div className="cookie-category">
           <div className="cookie-category-header">
             <div>
-              <h4>Strictly Necessary Cookies</h4>
-              <p>These cookies are essential for the website to function properly.</p>
+              <h4>Strictly necessary</h4>
+              <p>Required for the site to work. These cannot be switched off.</p>
             </div>
             <div className="toggle disabled">
-              <span>Always Active</span>
+              <span>Always active</span>
             </div>
           </div>
         </div>
@@ -131,32 +114,30 @@ function CookieDetails({ onSave, onBack }: CookieDetailsProps) {
         <div className="cookie-category">
           <div className="cookie-category-header">
             <div>
-              <h4>Analytics Cookies</h4>
+              <h4>Analytics</h4>
               <p>
-                These cookies help us understand how visitors interact with our website 
-                by collecting and reporting information anonymously via Google Analytics.
+                Help us see which episodes and articles people read, via Google Analytics with IP
+                anonymisation enabled.
               </p>
             </div>
             <label className="toggle">
               <input
                 type="checkbox"
                 checked={analyticsEnabled}
-                onChange={(e) => setAnalyticsEnabled(e.target.checked)}
+                onChange={(event) => setAnalyticsEnabled(event.target.checked)}
               />
-              <span className="slider"></span>
+              <span className="slider" />
+              <span className="visually-hidden">Allow analytics cookies</span>
             </label>
           </div>
         </div>
       </div>
 
       <div className="cookie-details-actions">
-        <button 
-          className="btn-primary"
-          onClick={() => onSave(analyticsEnabled)}
-        >
-          Save Preferences
+        <button className="btn-primary" onClick={() => onSave(analyticsEnabled)}>
+          Save preferences
         </button>
       </div>
     </div>
-  );
+  )
 }

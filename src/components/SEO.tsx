@@ -1,31 +1,16 @@
-import { useDocumentHead } from '../hooks/useDocumentHead'
+// © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
-interface SEOProps {
-  title?: string
-  description?: string
-  image?: string
-  url?: string
-  type?: 'website' | 'article' | 'profile'
-  structuredData?: object | object[]
-}
+import { useDocumentHead, type DocumentHeadOptions } from '../hooks/useDocumentHead'
 
-const SEO = ({ 
-  title = 'My Data Guest - AI Without the Hype',
-  description = 'Practical insights about building with data. Real stories, honest conversations, and actionable advice from practitioners across engineering, product, and research.',
-  image = '/logo.png',
-  url = 'https://mydataguest.com',
-  type = 'website',
-  structuredData
-}: SEOProps) => {
-  useDocumentHead({
-    title,
-    description,
-    image,
-    url,
-    type,
-    structuredData
-  })
-  
+/**
+ * Renders nothing; syncs the document head.
+ *
+ * The site is a single scrolling page, so exactly one <SEO /> should be mounted
+ * (in App). Mounting one per section made every section race for the same title,
+ * description and canonical URL — and the last one mounted won.
+ */
+const SEO = (props: DocumentHeadOptions) => {
+  useDocumentHead(props)
   return null
 }
 
