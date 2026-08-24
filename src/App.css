@@ -202,20 +202,20 @@
 
 /* The logo file is a three-line stacked wordmark; at header size it is
    illegible, so the brand name is set in type next to the door mark instead.
-   It takes the two colours straight out of the logo artwork — #02738d and
-   #ffa82e, which are --primary and --accent — so the typed wordmark and the
-   mark beside it read as one lockup. */
+   It follows the artwork exactly: "My" and "Guest" in the logo amber (#ffa82e,
+   --accent) with "Data" in the logo teal (#02738d, --primary), so the typed
+   wordmark and the mark beside it read as one lockup. */
 .brand-name {
   font-size: var(--step-1);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.1;
-  color: var(--primary);
+  color: var(--accent);
   white-space: nowrap;
 }
 
 .brand-name span {
-  color: var(--accent);
+  color: var(--primary);
 }
 
 .header-right {
@@ -331,9 +331,14 @@
   gap: 14px;
 }
 
+/* Amber holds up on the deep teal footer, but "Data" in the logo teal would all
+   but vanish against it — so that word goes light and the rhythm is preserved. */
 .footer-brand .brand-name {
-  color: var(--inverse-text);
   font-size: var(--step-2);
+}
+
+.footer-brand .brand-name span {
+  color: var(--inverse-text);
 }
 
 .footer-tagline {

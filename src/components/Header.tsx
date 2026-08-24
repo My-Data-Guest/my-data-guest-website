@@ -100,8 +100,10 @@ const BrandMark = () => (
       width={34}
       height={34}
     />
+    {/* The artwork sets "My" and "Guest" in amber and "Data" in teal, so only the
+        middle word needs its own span. */}
     <span className="brand-name">
-      My Data <span>Guest</span>
+      My <span>Data</span> Guest
     </span>
   </>
 )

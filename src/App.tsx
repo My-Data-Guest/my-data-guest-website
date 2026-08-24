@@ -86,7 +86,7 @@ function App() {
           <div className="footer-top">
             <div className="footer-brand">
               <span className="brand-name">
-                My Data <span>Guest</span>
+                My <span>Data</span> Guest
               </span>
               <p className="footer-tagline">
                 AI without the hype — a podcast, a newsletter, and live courses for people building
