@@ -90,6 +90,34 @@ function CourseDetail() {
                 </div>
               )}
 
+              {course.stack && (
+                <section aria-labelledby="course-stack-title">
+                  <h2 id="course-stack-title" className="subsection-title">
+                    What you&rsquo;ll use
+                  </h2>
+                  <ul className="course-stack">
+                    {course.stack.map((tool) => (
+                      <li key={tool}>{tool}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {/* Second question a visitor asks, so it sits second — it used to be
+                  the last block on the page, below the install instructions. */}
+              {course.audience && (
+                <section aria-labelledby="course-audience-title">
+                  <h2 id="course-audience-title" className="subsection-title">
+                    Who it&rsquo;s for
+                  </h2>
+                  <ul className="course-list">
+                    {course.audience.map((entry) => (
+                      <li key={entry}>{entry}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
               {course.outcomes && (
                 <section aria-labelledby="course-outcomes-title">
                   <h2 id="course-outcomes-title" className="subsection-title">
@@ -110,8 +138,9 @@ function CourseDetail() {
                   </h2>
                   {scheduled && (
                     <p className="course-schedule-note">
-                      Weekend afternoons, so you don&rsquo;t have to take time off work. All times
-                      are CET.
+                      Lessons are on weekend afternoons, so they don&rsquo;t cost you time off work.
+                      The two office hours are midweek. Times are shown as taught, in the
+                      instructor&rsquo;s timezone.
                     </p>
                   )}
                   <ol className={`course-modules${scheduled ? ' is-schedule' : ''}`}>
@@ -157,6 +186,45 @@ function CourseDetail() {
                 </section>
               )}
 
+              {course.instructor && (
+                <section aria-labelledby="course-instructor-title">
+                  <h2 id="course-instructor-title" className="subsection-title">
+                    Taught by
+                  </h2>
+                  {/* Reuses the About page's bio card: same job, same shape, and it
+                      already collapses to one column on narrow screens. */}
+                  <div className="host-card">
+                    {course.instructor.photo && (
+                      <img
+                        src={`${import.meta.env.BASE_URL}${course.instructor.photo}`}
+                        alt={course.instructor.name}
+                        className="host-photo"
+                        width={96}
+                        height={96}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    )}
+                    <div>
+                      <h3 className="host-name">{course.instructor.name}</h3>
+                      <p className="host-role">{course.instructor.role}</p>
+                      <p className="host-bio">{course.instructor.bio}</p>
+                      {course.instructor.links && (
+                        <ul className="course-instructor-links">
+                          {course.instructor.links.map(({ href, label }) => (
+                            <li key={label}>
+                              <a href={href} target="_blank" rel="noopener noreferrer">
+                                {label}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                </section>
+              )}
+
               {course.includes && (
                 <section aria-labelledby="course-includes-title">
                   <h2 id="course-includes-title" className="subsection-title">
@@ -192,19 +260,6 @@ function CourseDetail() {
                   </div>
                 </section>
               )}
-
-              {course.audience && (
-                <section aria-labelledby="course-audience-title">
-                  <h2 id="course-audience-title" className="subsection-title">
-                    Who it&rsquo;s for
-                  </h2>
-                  <ul className="course-list">
-                    {course.audience.map((entry) => (
-                      <li key={entry}>{entry}</li>
-                    ))}
-                  </ul>
-                </section>
-              )}
             </div>
           )}
 
@@ -212,9 +267,11 @@ function CourseDetail() {
             {course.registrationUrl ? (
               <>
                 <h2 className="course-aside-title">Ready to join?</h2>
+                {/* The seat count is the row directly below, so this sells the
+                    consequence rather than repeating the number. */}
                 <p className="course-aside-text">
                   {course.seats
-                    ? `Only ${course.seats} seats — small enough that your own problem gets time in every session.`
+                    ? 'A cohort this small means your own problem gets time in every session.'
                     : 'Seats are limited so the cohort stays small enough for real conversation.'}
                 </p>
               </>
@@ -255,11 +312,15 @@ function CourseDetail() {
                 {course.stripeBuyButtonId ? (
                   <StripeBuyButton
                     buyButtonId={course.stripeBuyButtonId}
-                    fallback={<EnrolLink course={course} />}
+                    // Checkout is unreachable in this branch, so the fallback must
+                    // not promise it: "Enrol now" landing on a LinkedIn page is a
+                    // dead end, while "message us" is something you can act on.
+                    fallback={<EnrolLink course={course} label="Message us to enrol" />}
                   />
                 ) : (
                   <EnrolLink course={course} />
                 )}
+
                 {/* The discount is tied to the Substack subscription, so the way to
                     qualify for it has to be one click from the price. */}
                 {course.priceNote && (
@@ -271,6 +332,15 @@ function CourseDetail() {
                   >
                     Not a subscriber yet? Read the newsletter
                   </a>
+                )}
+
+                {/* The two questions asked between reading the price and paying it.
+                    Last in the card: answers to have, not calls to action. */}
+                {(course.afterPurchase || course.refundPolicy) && (
+                  <div className="course-aside-terms">
+                    {course.afterPurchase && <p>{course.afterPurchase}</p>}
+                    {course.refundPolicy && <p>{course.refundPolicy}</p>}
+                  </div>
                 )}
               </>
             ) : (
@@ -297,14 +367,14 @@ function CourseDetail() {
  * behind one — an enrolment card with no way to enrol is the worst outcome, so
  * this stands in whenever Stripe's script does not arrive.
  */
-const EnrolLink = ({ course }: { course: Course }) => (
+const EnrolLink = ({ course, label }: { course: Course; label?: string }) => (
   <a
     href={course.registrationUrl}
     target="_blank"
     rel="noopener noreferrer"
     className="btn accent block"
   >
-    {course.registrationLabel ?? 'Enrol now'}
+    {label ?? course.registrationLabel ?? 'Enrol now'}
   </a>
 )
 

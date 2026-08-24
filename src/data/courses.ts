@@ -44,6 +44,8 @@ export interface Course {
   summary?: string
   duration?: string
   level?: string
+  /** Practice between sessions, so the real time commitment is not a surprise. */
+  homework?: string
   language?: string
   price?: string
   /** Numeric price and currency, for the schema.org Offer. Keep in step with `price`. */
@@ -61,7 +63,23 @@ export interface Course {
   image?: string
   audience?: string[]
   outcomes?: string[]
+  /**
+   * The tools, as chips near the top. The stack is otherwise only discoverable by
+   * reading the whole programme, and someone deciding whether this course fits
+   * their week needs to see "LangGraph" in the first five seconds — including so
+   * they can rule it out.
+   */
+  stack?: string[]
   modules?: CourseModule[]
+  /** Who teaches it. A paid offer needs a name and a reason to trust it, on the page. */
+  instructor?: {
+    name: string
+    role: string
+    bio: string
+    /** Filename in public/, e.g. 'alessandro.jpg'. */
+    photo?: string
+    links?: { href: string; label: string }[]
+  }
   /** What you keep afterwards — the answer to "and then what?". */
   includes?: string[]
   /** What to have ready before the first session. Rendered as a highlighted block. */
@@ -72,6 +90,10 @@ export interface Course {
     /** What not to worry about, so the list does not read as a barrier. */
     provided?: string
   }
+  /** What happens between paying and the first session. Shown under the button. */
+  afterPurchase?: string
+  /** The refund terms, in one line. Shown under the button. */
+  refundPolicy?: string
   /** Where "Enrol" points. Until it exists the page offers the newsletter instead. */
   registrationUrl?: string
   /**
@@ -98,9 +120,10 @@ export const COURSES: Course[] = [
     status: 'enrolling',
     format: 'Live on Zoom',
     summary:
-      'Most “AI agent” material stops at a demo. This one does not. Over two weekends you build one real system — an AI Knowledge Assistant that searches the web, answers from your own documents, remembers the conversation and runs as a deployed app. We start from a plain model call and add one capability at a time, so you always understand why each piece exists. Sessions are on Saturday and Sunday afternoons on purpose: you should not have to burn holiday to learn this.',
+      'Most “AI agent” material stops at a demo. This one does not. Over two weekends you build one real system — an AI Knowledge Assistant that searches the web, answers from your own documents, remembers the conversation and runs as a deployed app. We start from a plain model call and add one capability at a time, so you always understand why each piece exists. Lessons are on Saturday and Sunday afternoons on purpose: you should not have to burn holiday to learn this.',
     duration: '4 live lessons of 1h30, plus 2 office hours of 30 min',
-    level: 'Intermediate — comfortable writing Python',
+    level: 'Intermediate — you write Python comfortably',
+    homework: 'About 2 hours of practice',
     language: 'English',
     price: '€300',
     priceAmount: 300,
@@ -113,24 +136,36 @@ export const COURSES: Course[] = [
     startDate: '2026-09-26',
     endDate: '2026-10-07',
     audience: [
-      'Engineers and data people who can write Python and want to build agents properly, not paste a framework tutorial.',
+      'Engineers and data people who want to build agents properly, not paste a framework tutorial.',
       'Anyone who has shipped a chatbot demo and hit the wall the moment it needed real tools, real data or real reliability.',
-      'Working professionals — every session is on a weekend afternoon, so no holiday required.',
+      'Working professionals who would rather not spend their holiday on training.',
     ],
     outcomes: [
       'A deployed AI Knowledge Assistant you built yourself: LangGraph agent, tools, RAG over your documents, memory, and a chat UI live on the internet.',
       'The judgement to know when an agent is the right answer — and when deterministic code or a single LLM call is cheaper and better.',
       'A working mental model of the ReAct loop, and how LangGraph turns it into a state machine you can inspect and debug.',
-      'Tool design you can trust: schemas, error handling and the failure modes that quietly break agents in production.',
-      'RAG, context engineering and MCP as one grounding layer, so you control exactly what the model sees.',
+      'Tools and grounding you can trust: schemas, error handling, RAG and context engineering, so you control what the model sees and what it is able to do.',
       'Tracing and evaluation with LangSmith, so you can answer "what did my agent actually do?".',
+    ],
+    // Named up front so nobody discovers the ecosystem three lessons in. It is a
+    // LangChain-stack course, and someone who wants framework-agnostic should be
+    // able to see that and leave.
+    stack: [
+      'Python',
+      'LangGraph',
+      'LangChain',
+      'LangSmith',
+      'MCP',
+      'Streamlit',
+      'Render',
+      'OpenAI',
     ],
     modules: [
       {
         kind: 'lesson',
         label: 'Lesson 1',
         date: '2026-09-26',
-        time: '15:00–16:30 CET',
+        time: '15:00–16:30 CEST',
         title: 'From LLMs to agents, and the ReAct loop',
         description:
           'When an agent is the right tool and when it is expensive overkill. Then we grow a plain model call into something that can remember, act and loop — and write the ReAct loop by hand, so nothing later is magic.',
@@ -140,17 +175,23 @@ export const COURSES: Course[] = [
         kind: 'lesson',
         label: 'Lesson 2',
         date: '2026-09-27',
-        time: '15:00–16:30 CET',
+        time: '15:00–16:30 CEST',
         title: 'LangGraph: the agent as a state machine',
         description:
-          'Why a graph beats a linear chain. Nodes, edges, conditional routing and shared state — then your first real agent graph, and the start of the Knowledge Assistant you keep building all course.',
-        topics: ['Graphs vs. chains', 'State, nodes, edges', 'Conditional routing', 'Knowledge Assistant v1'],
+          'Why a graph beats a linear chain. Nodes, edges, conditional routing and shared state — and because memory is just state that survives, it lands here too. We wire up LangSmith tracing the moment the graph exists, so you spend the rest of the course able to see inside it instead of guessing. You leave with Knowledge Assistant v1.',
+        topics: [
+          'Graphs vs. chains',
+          'State, memory and checkpoints',
+          'Conditional routing',
+          'Tracing with LangSmith',
+          'Knowledge Assistant v1',
+        ],
       },
       {
         kind: 'office-hour',
         label: 'Office hour',
         date: '2026-09-30',
-        time: '15:00–15:30 CET',
+        time: '15:00–15:30 CEST',
         title: 'Midweek office hour',
         description:
           'Bring your homework and whatever broke. Half an hour, cameras optional, no question too small.',
@@ -159,49 +200,63 @@ export const COURSES: Course[] = [
         kind: 'lesson',
         label: 'Lesson 3',
         date: '2026-10-03',
-        time: '15:00–16:30 CET',
+        time: '15:00–16:30 CEST',
         title: 'Tools, and the knowledge layer',
         description:
-          'Tools are the hands of the agent — we design them to be reliable, not just callable. Then the grounding layer: RAG over real documents, context engineering, memory across sessions, and MCP servers for everything you did not write yourself.',
-        topics: ['Reliable tool design', 'RAG pipeline', 'Context engineering', 'Memory', 'MCP servers'],
+          'Tools are the hands of the agent — we design them to be reliable, not just callable. Then the grounding layer: RAG over real documents, context engineering, and MCP servers for everything you did not write yourself.',
+        topics: ['Reliable tool design', 'RAG pipeline', 'Context engineering', 'MCP servers'],
       },
       {
         kind: 'lesson',
         label: 'Lesson 4',
         date: '2026-10-04',
-        time: '15:00–16:30 CET',
+        time: '15:00–16:30 CEST',
         title: 'Multi-agent, and shipping it',
         description:
-          'When one agent is not enough, and how to split responsibility without inventing complexity. Then we make it real: a Streamlit chat UI, tracing and evaluation in LangSmith, and a live deployment.',
-        topics: ['Supervisor pattern', 'Streamlit chat UI', 'LangSmith tracing & eval', 'Deploy to Render'],
+          'When one agent is not enough, and how to split responsibility without inventing complexity. Then we make it real: a Streamlit chat UI, evaluation in LangSmith on top of the tracing you already have, and a live deployment.',
+        topics: ['Supervisor pattern', 'Streamlit chat UI', 'Evaluation in LangSmith', 'Deploy to Render'],
       },
       {
         kind: 'office-hour',
         label: 'Office hour',
         date: '2026-10-07',
-        time: '15:00–15:30 CET',
+        time: '15:00–15:30 CEST',
         title: 'Closing office hour',
         description:
           'Deployment troubleshooting, code review on what you built, and where to take it next.',
       },
     ],
     includes: [
-      'Every notebook, slide deck and homework — yours to keep, forever, after the course ends.',
+      'A recording of every session, shared with the cohort — so a weekend you cannot make is not a lesson you lose.',
+      'Every notebook, slide deck and exercise — yours to keep, forever, after the course ends.',
       'The full Knowledge Assistant codebase, including the finished reference solution.',
       'Two live office hours between the lessons, for the questions that only show up once you start building.',
-      'A cohort capped at 20, so there is room for your actual problem in every session.',
     ],
+    instructor: {
+      name: 'Alessandro Romano',
+      role: 'Data Scientist / AI Engineer',
+      bio: 'I build data and AI systems for a living, and I host the My Data Guest podcast and newsletter — so I spend most of my week either shipping this stuff or asking other practitioners how they ship it. This course is the material I wish I had when I built my first agent: the parts that matter, in the order they matter, without the framework tour.',
+      photo: 'alessandro.jpg',
+      links: [
+        { href: 'https://www.aromano.dev/', label: 'Website' },
+        { href: 'https://www.linkedin.com/in/alessandro-romano-1990/', label: 'LinkedIn' },
+      ],
+    },
     requirements: {
       callout:
-        'Please get a working Python environment set up before the first session. Setting one up is step one of Lesson 1, but ninety minutes are far better spent building than installing — come prepared and you will get much more out of the course.',
+        'Get a working Python environment set up before the first session. Ninety minutes are far better spent building than installing.',
       items: [
         'Python on your own machine, and the ability to install packages into an environment you create. Any package manager works; we use uv, and it will save you the most time.',
-        'Enough Python to read and edit a script. No prior experience with LangChain, LangGraph or any agent framework is needed.',
+        'No prior experience with LangChain, LangGraph or any agent framework — we start from a plain model call.',
         'Zoom, and an editor you are comfortable in — VS Code, Cursor, PyCharm and Jupyter are all fine.',
       ],
       provided:
         'Everything else comes with the course, including OpenAI API keys for the lessons. There is nothing to buy and no billing to set up.',
     },
+    afterPurchase:
+      'You get a confirmation email within a few hours of paying, with the Zoom link, the setup guide and everything to do before Lesson 1.',
+    refundPolicy:
+      'If the course does not run, you get a full refund. Otherwise seats are not refundable — the cohort is capped, so a held seat is one nobody else can take.',
     stripeBuyButtonId: 'buy_btn_1U81fuIK7YpsRNbyiakzTDwN',
     // The fallback if Stripe's script is blocked: the same channel as the
     // "Get in touch" call to action on the About page.
@@ -219,6 +274,7 @@ export const courseFacts = (course: Course): [string, string][] =>
     [
       ['Format', course.format],
       ['Duration', course.duration],
+      ['Between sessions', course.homework],
       ['Cohort', course.seats ? `${course.seats} seats max` : undefined],
       ['Level', course.level],
       ['Language', course.language],

@@ -1090,6 +1090,23 @@
   color: var(--primary);
 }
 
+/* The fine print under the button: what arrives after paying, and the refund
+   terms. Quiet, but present — these are the last two questions before checkout,
+   and leaving them unanswered is what stalls the click. */
+.course-aside-terms {
+  display: grid;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.course-aside-terms p {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
 /* Checked list for outcomes and audience. */
 .course-list {
   display: grid;
@@ -1351,6 +1368,45 @@ li.is-office-hour .course-module-label {
   font-size: var(--step--1);
   line-height: 1.6;
   color: var(--text-soft);
+}
+
+/* The stack, as chips. Same pattern as the per-lesson topics but a step up in
+   weight, because this is the block someone scans to decide the course is (or is
+   not) about their ecosystem. */
+.course-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.course-stack li {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Text links rather than the About page's icon buttons: in the middle of a
+   syllabus a row of glyphs reads as navigation. */
+.course-instructor-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.course-instructor-links a {
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--primary);
+  transition: opacity 0.2s var(--ease);
+}
+
+.course-instructor-links a:hover {
+  opacity: 0.75;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

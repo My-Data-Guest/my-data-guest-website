@@ -10,8 +10,10 @@ import { generateCourseListStructuredData, PLATFORMS, SITE_URL } from '../utils/
 /** What actually happens if you sign up — the reassurance a paid offer needs. */
 const STEPS = [
   {
-    title: 'Pick a cohort',
-    text: 'Dates and the full programme go out through the newsletter before enrolment opens.',
+    title: 'Book a seat',
+    // Was "dates and the programme go out through the newsletter before enrolment
+    // opens", which stopped being true the moment a course page carried both.
+    text: 'Every date and the full programme are on the course page. Pay, and the confirmation email follows within a few hours.',
   },
   {
     title: 'Show up and build',

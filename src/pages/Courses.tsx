@@ -18,7 +18,9 @@ import { formatDate } from '../utils/text'
 const SELLING_POINTS = [
   {
     Icon: LiveIcon,
-    title: 'Live, not recorded',
+    // Not "live, not recorded": sessions *are* recorded for the cohort, and the
+    // point being made is that they are taught rather than pre-canned.
+    title: 'Live, not pre-recorded',
     text: 'Taught in real time. You ask questions while the problem is in front of you.',
   },
   {
