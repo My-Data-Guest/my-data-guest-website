@@ -201,18 +201,21 @@
 }
 
 /* The logo file is a three-line stacked wordmark; at header size it is
-   illegible, so the brand name is set in type next to the door mark instead. */
+   illegible, so the brand name is set in type next to the door mark instead.
+   It takes the two colours straight out of the logo artwork — #02738d and
+   #ffa82e, which are --primary and --accent — so the typed wordmark and the
+   mark beside it read as one lockup. */
 .brand-name {
   font-size: var(--step-1);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.1;
-  color: var(--text);
+  color: var(--primary);
   white-space: nowrap;
 }
 
 .brand-name span {
-  color: var(--accent-text);
+  color: var(--accent);
 }
 
 .header-right {
