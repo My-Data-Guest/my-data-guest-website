@@ -20,7 +20,7 @@ const HOST_CARDS = [
   {
     ...HOSTS.rosaria,
     photo: 'rosaria.jpg',
-    role: 'Co-host · Data science',
+    role: 'Data Scientist / AI Educator',
     links: [
       { href: 'https://rosariasilipo.com/', label: 'Website', Icon: WebsiteIcon },
       { href: 'https://www.linkedin.com/in/rosaria/', label: 'LinkedIn', Icon: LinkedInGlyph },
