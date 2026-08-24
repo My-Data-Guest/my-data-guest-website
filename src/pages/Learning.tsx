@@ -40,21 +40,36 @@ function Learning() {
   }, [])
 
   return (
-    <div className="prose">
-      <h2 id="learning-title" className="section-title">
-        Learning
-      </h2>
-      <p>
-        Articles and notes from the My Data Guest newsletter — practical guides for building better
-        data systems and making smarter decisions.
-      </p>
+    <div className="container">
+      <div className="section-head-row">
+        <div className="section-head">
+          <p className="eyebrow">The newsletter</p>
+          <h2 id="learning-title" className="section-title">
+            Written notes, worth the read
+          </h2>
+          <p className="section-lead">
+            Practical guides on building better data systems and making smarter decisions — the
+            things we keep having to explain twice.
+          </p>
+        </div>
+
+        <a
+          href={PLATFORMS.substack}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link-action"
+        >
+          Read on Substack
+          <span aria-hidden="true">→</span>
+        </a>
+      </div>
 
       {loading ? (
         <p className="feed-status" role="status">
           Loading latest articles…
         </p>
       ) : (
-        <ul className="grid">
+        <ul className="article-grid">
           {posts.map((post) => {
             const published = formatDate(post.pubDate, { day: 'numeric', month: 'short' })
 
@@ -64,11 +79,9 @@ function Learning() {
                   href={post.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="learning-card"
+                  className="article-card"
                 >
-                  <div
-                    className={`learning-card-image${post.image ? '' : ' is-placeholder'}`}
-                  >
+                  <div className={`article-card-image${post.image ? '' : ' is-placeholder'}`}>
                     <img
                       src={post.image || `${import.meta.env.BASE_URL}logo.png`}
                       alt=""
@@ -76,18 +89,18 @@ function Learning() {
                       decoding="async"
                     />
                   </div>
-                  <div className="learning-card-content">
-                    <div className="learning-card-meta">
+                  <div className="article-card-content">
+                    <div className="article-card-meta">
                       <span className="tag tag-newsletter">
-                        <SubstackGlyph size={14} />
+                        <SubstackGlyph size={13} />
                         Newsletter
                       </span>
                       {published && (
                         <time dateTime={new Date(post.pubDate).toISOString()}>{published}</time>
                       )}
                     </div>
-                    <h3 className="learning-card-title">{post.title}</h3>
-                    <p className="learning-card-text">{post.description}</p>
+                    <h3 className="article-card-title">{post.title}</h3>
+                    <p className="article-card-text">{post.description}</p>
                   </div>
                 </a>
               </li>
@@ -95,12 +108,6 @@ function Learning() {
           })}
         </ul>
       )}
-
-      <p className="section-cta">
-        <a href={PLATFORMS.substack} target="_blank" rel="noopener noreferrer" className="btn primary">
-          Read more on Substack →
-        </a>
-      </p>
     </div>
   )
 }

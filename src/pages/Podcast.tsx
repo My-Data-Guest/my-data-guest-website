@@ -39,35 +39,40 @@ function Podcast() {
   }, [])
 
   return (
-    <div className="prose">
+    <div className="container">
       {episodes.length > 0 && (
         <JsonLd id="episodes" data={generateEpisodeListStructuredData(episodes)} />
       )}
 
-      <h2 id="podcast-title" className="section-title">
-        Podcast
-      </h2>
-      <p>
-        Stories and lessons from people building with data — practical conversations about real
-        challenges and real solutions.
-      </p>
+      <div className="section-head-row">
+        <div className="section-head">
+          <p className="eyebrow">The podcast</p>
+          <h2 id="podcast-title" className="section-title">
+            Conversations with people who ship
+          </h2>
+          <p className="section-lead">
+            Stories and lessons from practitioners building with data and AI — what actually worked,
+            what broke, and what they would do differently.
+          </p>
+        </div>
 
-      <ul className="platform-row">
-        {SUBSCRIBE_LINKS.map(({ href, label, Icon }) => (
-          <li key={label}>
-            <a
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              title={label}
-              className="platform-link"
-            >
-              <Icon size={32} />
-            </a>
-          </li>
-        ))}
-      </ul>
+        <ul className="platform-row">
+          {SUBSCRIBE_LINKS.map(({ href, label, Icon }) => (
+            <li key={label}>
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                title={label}
+                className="platform-link"
+              >
+                <Icon size={34} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {loading ? (
         <p className="feed-status" role="status">
@@ -85,8 +90,8 @@ function Podcast() {
                     <img
                       src={episode.image}
                       alt=""
-                      width={168}
-                      height={168}
+                      width={132}
+                      height={132}
                       loading="lazy"
                       decoding="async"
                     />
@@ -129,16 +134,23 @@ function Podcast() {
         </ul>
       )}
 
-      <p className="section-cta">
+      <div className="callout">
+        <div>
+          <h3 className="callout-title">Never miss an episode</h3>
+          <p>
+            New conversations land on Spotify, Apple Podcasts and YouTube — and every episode is
+            written up on Substack.
+          </p>
+        </div>
         <a
           href={PLATFORMS.substack}
           target="_blank"
           rel="noopener noreferrer"
           className="btn primary"
         >
-          All episodes on Substack →
+          All episodes on Substack
         </a>
-      </p>
+      </div>
     </div>
   )
 }

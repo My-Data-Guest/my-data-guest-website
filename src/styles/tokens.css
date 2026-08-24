@@ -1,0 +1,190 @@
+/* © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE. */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Design tokens
+   ───────────────────────────────────────────────────────────────────────────
+   Two layers, and only the second one is used by components:
+
+   1. Ramps (--brand-*, --amber-*, --ink-*) — the raw palette. Every step is
+      derived from the two logo colours, teal #02738d and amber #ffa82e, so the
+      site and the mark stay in the same family.
+   2. Semantics (--text, --surface, --border, …) — what components reference.
+      Dark mode only reassigns this layer, which is why no component rule
+      needs a `prefers-color-scheme` branch of its own.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Brand teal ────────────────────────────────────────────────────────── */
+  --brand-950: #04222b;
+  --brand-900: #05303c;
+  --brand-800: #064253;
+  --brand-700: #025f74;
+  --brand-600: #02738d; /* the logo teal */
+  --brand-500: #0b8ba8;
+  --brand-400: #35a8c2;
+  --brand-300: #7cc6d8;
+  --brand-200: #b3dde8;
+  --brand-100: #d8ecf2;
+  --brand-50: #eff8fa;
+
+  /* ── Accent amber ──────────────────────────────────────────────────────── */
+  /* 500 is the logo amber. It fails contrast as text on white, so anything
+     type-sized uses 700 and 500 is reserved for fills, rules and dark mode. */
+  --amber-800: #8f5600;
+  --amber-700: #ac6a04;
+  --amber-600: #d98c0d;
+  --amber-500: #ffa82e; /* the logo amber */
+  --amber-300: #ffcb85;
+  --amber-100: #ffe9c9;
+  --amber-50: #fff8ed;
+
+  /* ── Neutrals ──────────────────────────────────────────────────────────── */
+  /* Cooled a few degrees toward the brand teal so greys never read purple
+     next to it. The previous cream (#fefdf9) fought the slate borders. */
+  --ink-950: #071720;
+  --ink-900: #0b1f29;
+  --ink-800: #143241;
+  --ink-700: #274c5c;
+  --ink-600: #456b7b;
+  --ink-500: #628693;
+  --ink-400: #8ba7b3;
+  --ink-300: #adc2cb;
+  --ink-200: #cddce2;
+  --ink-100: #e5eef1;
+  --ink-75: #eef4f6;
+  --ink-50: #f5f9fa;
+  --white: #ffffff;
+
+  /* ── Semantics: light ──────────────────────────────────────────────────── */
+  --bg: var(--white);
+  --bg-subtle: var(--ink-50);
+  --surface: var(--white);
+  --surface-2: var(--ink-50);
+  --surface-raised: var(--white);
+
+  --text: var(--ink-900);
+  --text-muted: var(--ink-700);
+  --text-soft: var(--ink-600);
+  --text-faint: var(--ink-500);
+
+  --border: var(--ink-100);
+  --border-strong: var(--ink-200);
+  --border-hairline: rgba(11, 31, 41, 0.08);
+
+  --primary: var(--brand-600);
+  --primary-hover: var(--brand-700);
+  --primary-active: var(--brand-800);
+  --primary-text: var(--white);
+  --primary-soft: var(--brand-50);
+  --primary-soft-border: var(--brand-100);
+  --on-primary-muted: rgba(255, 255, 255, 0.8);
+
+  --accent: var(--amber-500);
+  --accent-text: var(--amber-700);
+  --accent-soft: var(--amber-50);
+
+  /* Inverse: the deep teal band used for the courses pitch and the footer. */
+  --inverse-bg: var(--brand-950);
+  --inverse-surface: rgba(255, 255, 255, 0.05);
+  --inverse-border: rgba(255, 255, 255, 0.12);
+  --inverse-border-strong: rgba(255, 255, 255, 0.2);
+  --inverse-text: #eaf5f8;
+  --inverse-muted: rgba(234, 245, 248, 0.72);
+  --inverse-faint: rgba(234, 245, 248, 0.55);
+
+  --focus-ring: var(--brand-500);
+
+  /* ── Elevation ─────────────────────────────────────────────────────────── */
+  /* Two-part shadows: a tight contact edge plus a wide soft cast. */
+  --shadow-xs: 0 1px 2px rgba(11, 31, 41, 0.05);
+  --shadow-sm: 0 1px 2px rgba(11, 31, 41, 0.04), 0 2px 6px rgba(11, 31, 41, 0.04);
+  --shadow-md: 0 1px 2px rgba(11, 31, 41, 0.04), 0 8px 20px -6px rgba(11, 31, 41, 0.1);
+  --shadow-lg: 0 2px 4px rgba(11, 31, 41, 0.04), 0 18px 40px -12px rgba(11, 31, 41, 0.16);
+  --shadow-header: 0 1px 0 var(--border), 0 4px 20px -8px rgba(11, 31, 41, 0.1);
+
+  /* ── Radii ─────────────────────────────────────────────────────────────── */
+  /* Tighter than before (was 12/16/20). Large radii read consumer-app; the
+     smaller set reads like a studio or a training provider. */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  --container: 1180px;
+  --container-wide: 1320px;
+  --measure: 62ch; /* comfortable reading width for body copy */
+  --gutter: clamp(20px, 4.5vw, 44px);
+  --header-height: 72px;
+  --band-y: clamp(72px, 9vw, 128px);
+
+  /* ── Type ──────────────────────────────────────────────────────────────── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Eyebrow labels: the system mono stack, so there is no extra webfont to
+     download for what is a handful of small uppercase words. */
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, 'JetBrains Mono', Menlo, monospace;
+
+  --step--1: clamp(13px, 0.2vw + 12.4px, 14px);
+  --step-0: clamp(15px, 0.25vw + 14.2px, 16px);
+  --step-1: clamp(17px, 0.4vw + 16px, 19px);
+  --step-2: clamp(19px, 0.6vw + 17.6px, 22px);
+  --step-3: clamp(22px, 1vw + 19.6px, 27px);
+  --step-4: clamp(26px, 1.8vw + 21.6px, 34px);
+  --step-5: clamp(31px, 3vw + 23.4px, 44px);
+  --step-6: clamp(36px, 4.6vw + 24.5px, 60px);
+
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Semantics: dark ─────────────────────────────────────────────────────── */
+/* Not a straight inversion. Surfaces sit on a deep teal-black rather than a
+   neutral grey, text warms slightly, and the amber does the accent work the
+   teal cannot at low luminance. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --bg: #06171f;
+    --bg-subtle: #0a1f29;
+    --surface: #0d2530;
+    --surface-2: #102b38;
+    --surface-raised: #12303d;
+
+    --text: #e8f3f6;
+    --text-muted: #b3cbd4;
+    --text-soft: #94b1bd;
+    --text-faint: #7d9aa7;
+
+    --border: rgba(255, 255, 255, 0.1);
+    --border-strong: rgba(255, 255, 255, 0.17);
+    --border-hairline: rgba(255, 255, 255, 0.08);
+
+    --primary: var(--brand-400);
+    --primary-hover: var(--brand-300);
+    --primary-active: var(--brand-200);
+    --primary-text: #04222b;
+    --primary-soft: rgba(53, 168, 194, 0.12);
+    --primary-soft-border: rgba(53, 168, 194, 0.28);
+    --on-primary-muted: rgba(4, 34, 43, 0.72);
+
+    --accent: var(--amber-500);
+    --accent-text: var(--amber-300);
+    --accent-soft: rgba(255, 168, 46, 0.12);
+
+    /* One step darker than the page, so the band still separates. */
+    --inverse-bg: #030f15;
+    --inverse-surface: rgba(255, 255, 255, 0.045);
+    --inverse-border: rgba(255, 255, 255, 0.1);
+    --inverse-border-strong: rgba(255, 255, 255, 0.18);
+
+    --focus-ring: var(--brand-300);
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.25);
+    --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 20px -6px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.3), 0 18px 40px -12px rgba(0, 0, 0, 0.6);
+    --shadow-header: 0 1px 0 var(--border), 0 4px 20px -8px rgba(0, 0, 0, 0.5);
+  }
+}

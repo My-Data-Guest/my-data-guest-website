@@ -1,7 +1,7 @@
 // © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
 import { useEffect, useMemo, useRef } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
 import CoursesPage from './pages/CoursesPage'
@@ -28,6 +28,16 @@ const FOOTER_LINKS = [
   { href: PLATFORMS.spotify, label: 'Spotify', Icon: SpotifyIcon },
   { href: PLATFORMS.youtube, label: 'YouTube', Icon: YouTubeIcon },
   { href: PLATFORMS.apple, label: 'Apple Podcasts', Icon: ApplePodcastsIcon },
+]
+
+/* Router links, so a click from /courses lands on the homepage section rather
+   than resolving the hash against the current route. <ScrollToHash /> handles
+   the scroll once the homepage has mounted. */
+const FOOTER_SECTIONS = [
+  { to: '/#podcast', label: 'Podcast' },
+  { to: '/courses', label: 'Courses' },
+  { to: '/#learning', label: 'Newsletter' },
+  { to: '/#about', label: 'About' },
 ]
 
 function App() {
@@ -72,29 +82,72 @@ function App() {
       <ScrollToHash />
 
       <footer className="footer">
-        <ul className="footer-links">
-          {FOOTER_LINKS.map(({ href, label, Icon }) => (
-            <li key={label}>
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={label}
-                aria-label={label}
-                className="platform-link"
-              >
-                <Icon size={28} />
-              </a>
-            </li>
-          ))}
-        </ul>
-        <p className="footer-meta">
-          <span>© {new Date().getFullYear()} My Data Guest</span>
-          <span aria-hidden="true">·</span>
-          <button type="button" className="link-button" onClick={openCookiePreferences}>
-            Cookie preferences
-          </button>
-        </p>
+        <div className="container">
+          <div className="footer-top">
+            <div className="footer-brand">
+              <span className="brand-name">
+                My Data <span>Guest</span>
+              </span>
+              <p className="footer-tagline">
+                AI without the hype — a podcast, a newsletter, and live courses for people building
+                with data.
+              </p>
+              <ul className="footer-platforms">
+                {FOOTER_LINKS.map(({ href, label, Icon }) => (
+                  <li key={label}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={label}
+                      aria-label={label}
+                      className="platform-link"
+                    >
+                      <Icon size={30} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <nav aria-labelledby="footer-explore">
+              <h2 className="footer-col-title" id="footer-explore">
+                Explore
+              </h2>
+              <ul className="footer-list">
+                {FOOTER_SECTIONS.map(({ to, label }) => (
+                  <li key={label}>
+                    <Link to={to}>{label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            <div>
+              <h2 className="footer-col-title">Elsewhere</h2>
+              <ul className="footer-list">
+                {FOOTER_LINKS.map(({ href, label }) => (
+                  <li key={label}>
+                    <a href={href} target="_blank" rel="noopener noreferrer">
+                      {label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="footer-bottom">
+            <p className="footer-meta">
+              <span>© {new Date().getFullYear()} My Data Guest</span>
+              <span aria-hidden="true">·</span>
+              <span>All rights reserved</span>
+            </p>
+            <button type="button" className="link-button" onClick={openCookiePreferences}>
+              Cookie preferences
+            </button>
+          </div>
+        </div>
       </footer>
 
       <CookieConsent />

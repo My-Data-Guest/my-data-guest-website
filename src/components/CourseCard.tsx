@@ -26,7 +26,8 @@ const CourseCard = ({ course }: { course: Course }) => {
         </ul>
       )}
       <span className="course-card-cta" aria-hidden="true">
-        View course →
+        View course
+        <span>→</span>
       </span>
     </Link>
   )

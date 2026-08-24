@@ -21,20 +21,22 @@ function HomePage() {
         description="AI without the hype. A podcast, newsletter and live courses by Alessandro Romano and Rosaria Silipo — real stories, honest conversations, and practical advice from people building with data and AI."
       />
 
+      {/* The order is the funnel: the podcast is the evidence that the teaching is
+          worth paying for, so it comes before the courses pitch. */}
       <section id="home" className="hero" aria-labelledby="hero-title">
         <Home />
       </section>
-      <section id="podcast" className="band band-b" aria-labelledby="podcast-title">
+      <section id="podcast" className="band band-hairline" aria-labelledby="podcast-title">
         <Podcast />
       </section>
-      <section id="learning" className="band band-c" aria-labelledby="learning-title">
-        <Learning />
-      </section>
-      {/* A teaser, not the content: the catalogue lives on /courses. */}
-      <section id="courses" className="band band-b" aria-labelledby="courses-title">
+      {/* A pitch, not the catalogue: the full list lives on /courses. */}
+      <section id="courses" className="band band-inverse" aria-labelledby="courses-title">
         <Courses />
       </section>
-      <section id="about" className="band" aria-labelledby="about-title">
+      <section id="learning" className="band" aria-labelledby="learning-title">
+        <Learning />
+      </section>
+      <section id="about" className="band band-subtle" aria-labelledby="about-title">
         <About />
       </section>
     </>
