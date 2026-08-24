@@ -32,12 +32,23 @@ function Header() {
     : NAV_ITEMS.find((item) => item.path && pathname.startsWith(item.path))?.id
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50)
+    const handleScroll = () => setScrolled(window.scrollY > 24)
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Courses is the commercial action, so it renders as a button beside the nav
+  // instead of as one more equal-weight link inside it.
+  const links = NAV_ITEMS.filter((item) => !item.cta)
+  const ctas = NAV_ITEMS.filter((item) => item.cta)
+
+  const stateProps = (item: NavItem) => ({
+    'aria-current': active === item.id ? ('page' as const) : undefined,
+    // Lets the stylesheet drop individual entries on narrow screens.
+    'data-nav-id': item.id,
+  })
 
   return (
     <header className={`header${scrolled ? ' scrolled' : ''}`}>
@@ -50,25 +61,32 @@ function Header() {
           <BrandMark />
         </Link>
       )}
-      <nav className="nav" aria-label="Sections">
-        {NAV_ITEMS.map((item) => {
-          const isActive = active === item.id
-          const linkProps = {
-            className: isActive ? 'active' : undefined,
-            'aria-current': isActive ? ('true' as const) : undefined,
-            // Lets the stylesheet drop individual entries on narrow screens.
-            'data-nav-id': item.id,
-          }
 
-          return item.path ? (
-            <Link key={item.id} to={item.path} {...linkProps}>
-              {item.label}
-            </Link>
-          ) : (
-            <SectionLink key={item.id} item={item} isHome={isHome} {...linkProps} />
-          )
-        })}
-      </nav>
+      <div className="header-right">
+        <nav className="nav" aria-label="Sections">
+          {links.map((item) => {
+            const linkProps = {
+              ...stateProps(item),
+              className: active === item.id ? 'active' : undefined,
+            }
+
+            return item.path ? (
+              <Link key={item.id} to={item.path} {...linkProps}>
+                {item.label}
+              </Link>
+            ) : (
+              <SectionLink key={item.id} item={item} isHome={isHome} {...linkProps} />
+            )
+          })}
+        </nav>
+
+        {ctas.map((item) => (
+          <Link key={item.id} to={item.path ?? '/'} className="nav-cta" {...stateProps(item)}>
+            {item.label}
+            <span aria-hidden="true">→</span>
+          </Link>
+        ))}
+      </div>
     </header>
   )
 }
@@ -79,11 +97,13 @@ const BrandMark = () => (
       src={`${import.meta.env.BASE_URL}mark.png`}
       alt=""
       className="brand-mark"
-      width={40}
-      height={40}
+      width={34}
+      height={34}
     />
+    {/* The artwork sets "My" and "Guest" in amber and "Data" in teal, so only the
+        middle word needs its own span. */}
     <span className="brand-name">
-      My Data <span>Guest</span>
+      My <span>Data</span> Guest
     </span>
   </>
 )

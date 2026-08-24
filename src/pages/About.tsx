@@ -8,6 +8,9 @@ const HOST_CARDS = [
   {
     ...HOSTS.alessandro,
     photo: 'alessandro.jpg',
+    // The line under the name. `jobTitle` on HOSTS is "Co-host" for both of them,
+    // which tells a visitor nothing about who is doing the teaching.
+    role: 'Data Scientist / AI Engineer',
     links: [
       { href: 'https://www.aromano.dev/', label: 'Website', Icon: WebsiteIcon },
       { href: 'https://www.linkedin.com/in/alessandro-romano-1990/', label: 'LinkedIn', Icon: LinkedInGlyph },
@@ -17,6 +20,7 @@ const HOST_CARDS = [
   {
     ...HOSTS.rosaria,
     photo: 'rosaria.jpg',
+    role: 'Co-host · Data science',
     links: [
       { href: 'https://rosariasilipo.com/', label: 'Website', Icon: WebsiteIcon },
       { href: 'https://www.linkedin.com/in/rosaria/', label: 'LinkedIn', Icon: LinkedInGlyph },
@@ -27,57 +31,68 @@ const HOST_CARDS = [
 
 function About() {
   return (
-    <div className="prose">
-      <h2 id="about-title" className="section-title">
-        About
-      </h2>
+    <div className="container">
+      <div className="about-layout">
+        <div className="about-copy">
+          <p className="eyebrow">About</p>
+          <h2 id="about-title" className="section-title">
+            AI, explained by the people doing it
+          </h2>
+          <p className="lead">
+            From agentic AI and LLMs to startup stories and career impact — we break it down, episode
+            by episode, without the hype.
+          </p>
+          <p>
+            More than a podcast: My Data Guest is a newsletter, a growing library of practical
+            guides, and live courses. Practical, human, and genuinely useful.
+          </p>
+        </div>
 
-      <p className="lead">
-        Your go-to source for exploring AI without the hype. From agentic AI and LLMs to startup
-        stories and career impact — we break it down, episode by episode.
-      </p>
-      <p>
-        More than just a podcast, My Data Guest offers learning resources, articles and practical
-        guides across multiple formats. Practical, human, and genuinely useful.
-      </p>
-
-      <h3 className="subsection-title">Your hosts</h3>
-      <ul className="host-grid">
-        {HOST_CARDS.map((host) => (
-          <li key={host.name} className="host-card">
-            <img
-              src={`${import.meta.env.BASE_URL}${host.photo}`}
-              alt={`${host.name}, co-host of My Data Guest`}
-              className={`host-photo host-photo-${host.photo.split('.')[0]}`}
-              width={120}
-              height={120}
-              loading="lazy"
-              decoding="async"
-            />
-            <h4 className="host-name">{host.name}</h4>
-            <p className="host-bio">{host.description}</p>
-            <ul className="host-links">
-              {host.links.map(({ href, label, Icon }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={`${host.name} — ${label}`}
-                    aria-label={`${host.name} on ${label}`}
-                  >
-                    <Icon />
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
+        <div>
+          <h3 className="subsection-title">Your hosts</h3>
+          <ul className="host-grid">
+            {HOST_CARDS.map((host) => (
+              <li key={host.name} className="host-card">
+                <img
+                  src={`${import.meta.env.BASE_URL}${host.photo}`}
+                  alt={`${host.name}, co-host of My Data Guest`}
+                  className={`host-photo host-photo-${host.photo.split('.')[0]}`}
+                  width={96}
+                  height={96}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div>
+                  <h4 className="host-name">{host.name}</h4>
+                  <p className="host-role">{host.role}</p>
+                  <p className="host-bio">{host.description}</p>
+                  <ul className="host-links">
+                    {host.links.map(({ href, label, Icon }) => (
+                      <li key={label}>
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`${host.name} — ${label}`}
+                          aria-label={`${host.name} on ${label}`}
+                        >
+                          <Icon />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
       <div className="callout">
-        <h3>Want to be a guest?</h3>
-        <p>We&rsquo;re always looking for practitioners with interesting stories to share.</p>
+        <div>
+          <h3 className="callout-title">Want to be a guest?</h3>
+          <p>We&rsquo;re always looking for practitioners with interesting stories to share.</p>
+        </div>
         <a
           href={PLATFORMS.linkedin}
           target="_blank"

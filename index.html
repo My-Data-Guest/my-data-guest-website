@@ -11,7 +11,10 @@
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#02738d" />
+    <!-- Matches the page background per scheme, so the mobile browser chrome
+         blends into the site instead of banding against it. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#06171f" />
 
     <!-- Performance: fonts and the LCP hero image -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

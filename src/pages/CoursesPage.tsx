@@ -7,6 +7,22 @@ import JsonLd from '../components/JsonLd'
 import { COURSES } from '../data/courses'
 import { generateCourseListStructuredData, PLATFORMS, SITE_URL } from '../utils/structuredData'
 
+/** What actually happens if you sign up — the reassurance a paid offer needs. */
+const STEPS = [
+  {
+    title: 'Pick a cohort',
+    text: 'Dates and the full programme go out through the newsletter before enrolment opens.',
+  },
+  {
+    title: 'Show up and build',
+    text: 'Live sessions, worked examples, and your own questions answered as they come up.',
+  },
+  {
+    title: 'Leave with something that runs',
+    text: 'You finish with working code and notes you can take straight back to your own stack.',
+  },
+]
+
 function CoursesPage() {
   return (
     <section className="page" aria-labelledby="courses-page-title">
@@ -17,18 +33,17 @@ function CoursesPage() {
       />
       <JsonLd id="courses" data={generateCourseListStructuredData(COURSES)} />
 
-      <div className="prose">
-        <h1 id="courses-page-title" className="section-title">
-          Courses
-        </h1>
-        <p className="lead">
-          Live, online and hands-on. No recorded slideshows — you build alongside us and ask
-          questions as they come up.
-        </p>
-        <p>
-          Every course is taught in a small cohort so there is room for real discussion, and every
-          session is grounded in work we have actually shipped.
-        </p>
+      <div className="container">
+        <div className="section-head">
+          <p className="eyebrow">Live courses</p>
+          <h1 id="courses-page-title" className="section-title">
+            Online, live, and hands-on
+          </h1>
+          <p className="section-lead">
+            No recorded slideshows. You build alongside us in a small cohort, and every session is
+            grounded in work we have actually shipped.
+          </p>
+        </div>
 
         <ul className="course-grid">
           {COURSES.map((course) => (
@@ -38,12 +53,28 @@ function CoursesPage() {
           ))}
         </ul>
 
+        <section className="course-how" aria-labelledby="course-how-title">
+          <h2 id="course-how-title" className="subsection-title">
+            How a cohort works
+          </h2>
+          <ol className="steps">
+            {STEPS.map(({ title, text }) => (
+              <li key={title}>
+                <h3 className="step-title">{title}</h3>
+                <p className="step-text">{text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         <div className="callout">
-          <h2>Want to hear when a cohort opens?</h2>
-          <p>
-            Dates and enrolment go out through the newsletter first — subscribers get the early-bird
-            window.
-          </p>
+          <div>
+            <h2 className="callout-title">Want to hear when a cohort opens?</h2>
+            <p>
+              Dates and enrolment go out through the newsletter first — subscribers get the
+              early-bird window.
+            </p>
+          </div>
           <a
             href={PLATFORMS.substack}
             target="_blank"

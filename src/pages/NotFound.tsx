@@ -13,16 +13,24 @@ function NotFound() {
         noindex
       />
 
-      <div className="prose">
-        <h1 id="notfound-title" className="section-title">
-          Page not found
-        </h1>
-        <p>That link does not lead anywhere — it may have moved since it was shared.</p>
-        <p className="section-cta">
-          <Link to="/" className="btn primary">
-            Back to the homepage
-          </Link>
-        </p>
+      <div className="container">
+        <div className="not-found">
+          <p className="not-found-code">Error 404</p>
+          <h1 id="notfound-title" className="section-title">
+            Page not found
+          </h1>
+          <p className="section-lead">
+            That link does not lead anywhere — it may have moved since it was shared.
+          </p>
+          <div className="cta-row">
+            <Link to="/" className="btn primary">
+              Back to the homepage
+            </Link>
+            <Link to="/courses" className="btn">
+              Browse the courses
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   )

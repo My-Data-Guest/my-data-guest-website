@@ -82,3 +82,48 @@ export const SubstackGlyph = ({ size = 18 }: IconProps) => (
     <path d="M4 3h16v2.6H4V3zm0 4.7h16v2.6H4V7.7zM4 12.4h16V21l-8-4.3L4 21v-8.6z" />
   </svg>
 )
+
+/* Line icons for the course selling points. Stroked, not filled, so they sit
+   quietly next to the type instead of reading as another badge row. */
+const Line = ({ size = 22, children }: IconProps & { children: React.ReactNode }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    focusable="false"
+  >
+    {children}
+  </svg>
+)
+
+/** Live / broadcasting. */
+export const LiveIcon = ({ size }: IconProps) => (
+  <Line size={size}>
+    <circle cx="12" cy="12" r="2.5" />
+    <path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 16.2a6 6 0 0 0 0-8.4" />
+    <path d="M4.9 4.9a10 10 0 0 0 0 14.2M19.1 19.1a10 10 0 0 0 0-14.2" />
+  </Line>
+)
+
+/** A small group. */
+export const CohortIcon = ({ size }: IconProps) => (
+  <Line size={size}>
+    <circle cx="9" cy="8" r="3.2" />
+    <path d="M3.5 20a5.5 5.5 0 0 1 11 0" />
+    <path d="M16.5 5.2a3.2 3.2 0 0 1 0 5.9M18 14.4a5.5 5.5 0 0 1 2.5 4.6" />
+  </Line>
+)
+
+/** Hands-on / built from real work. */
+export const BuildIcon = ({ size }: IconProps) => (
+  <Line size={size}>
+    <path d="M9.5 4.5 4 10l5.5 5.5" />
+    <path d="M14.5 8.5 20 14l-5.5 5.5" />
+  </Line>
+)
