@@ -1,5 +1,6 @@
 // © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
+import { Link } from 'react-router-dom'
 import './pages.css'
 import {
   SpotifyIcon,
@@ -33,7 +34,7 @@ function Home() {
         />
         <h1 id="hero-title" className="hero-tagline">
           <span className="tagline-primary">AI Without the Hype.</span>
-          <span className="tagline-secondary">Podcast, Learnings and Stories.</span>
+          <span className="tagline-secondary">Podcast, Courses, Learnings and Stories.</span>
         </h1>
         <ul className="hero-platforms">
           {LISTEN_LINKS.map(({ href, label, Icon }) => (
@@ -58,6 +59,9 @@ function Home() {
           <a className="btn" href="#learning">
             Read the newsletter
           </a>
+          <Link className="btn" to="/courses">
+            Live courses
+          </Link>
         </div>
       </div>
       <a className="scroll-cue" href="#podcast" aria-label="Scroll to the podcast section">

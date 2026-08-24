@@ -7,6 +7,7 @@
 // <script type="application/ld+json"> blocks instead leaves Google to guess how
 // the organisation, website and podcast relate.
 
+import type { Course } from '../data/courses'
 import type { Episode } from './rss'
 
 export const SITE_URL = 'https://mydataguest.com'
@@ -149,6 +150,54 @@ export const generateEpisodeListStructuredData = (episodes: Episode[]) => ({
     partOfSeries: { '@id': PODCAST_ID },
     author: hostRefs,
   })),
+})
+
+const courseUrl = (course: Course) => `${SITE_URL}/courses/${course.slug}`
+
+const courseEntity = (course: Course) => ({
+  '@type': 'Course',
+  '@id': `${courseUrl(course)}#course`,
+  name: course.title,
+  description: course.summary ?? course.tagline,
+  url: courseUrl(course),
+  inLanguage: 'en',
+  provider: { '@id': ORGANIZATION_ID },
+  ...(course.image ? { image: `${SITE_URL}${course.image}` } : {}),
+  ...(course.level ? { educationalLevel: course.level } : {}),
+  // Courses run as live online cohorts, so each one has a dated instance rather
+  // than being self-paced. Only emitted once the dates are known.
+  ...(course.startDate
+    ? {
+        hasCourseInstance: [
+          {
+            '@type': 'CourseInstance',
+            courseMode: 'Online',
+            startDate: course.startDate,
+            ...(course.duration ? { courseWorkload: course.duration } : {}),
+          },
+        ],
+      }
+    : {}),
+})
+
+/** The courses index: one ItemList pointing at each course page. */
+export const generateCourseListStructuredData = (courses: Course[]) => ({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  '@id': `${SITE_URL}/courses#courses`,
+  name: 'My Data Guest courses',
+  itemListElement: courses.map((course, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    url: courseUrl(course),
+    item: courseEntity(course),
+  })),
+})
+
+/** A single course page. Placeholder courses skip this — see CourseDetail. */
+export const generateCourseStructuredData = (course: Course) => ({
+  '@context': 'https://schema.org',
+  ...courseEntity(course),
 })
 
 function toIsoDate(value: string): string | undefined {

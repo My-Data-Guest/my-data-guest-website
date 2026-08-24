@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Single-page site: the sections are #fragments of the homepage, and search
-  engines discard fragments when crawling, so listing them here adds nothing.
+  The homepage sections are #fragments, and search engines discard fragments when
+  crawling, so only real routes are listed here. Individual course pages join the
+  list once they carry actual content — until then they are noindex.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -9,5 +10,11 @@
     <lastmod>2026-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://mydataguest.com/courses</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

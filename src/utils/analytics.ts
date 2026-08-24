@@ -54,6 +54,20 @@ export const grantAnalyticsConsent = () => {
   window.gtag?.('consent', 'update', { analytics_storage: 'granted' })
 }
 
+/**
+ * Reports a route change.
+ *
+ * Router navigations never reload the document, so the gtag snippet's automatic
+ * page_view only ever covers the landing page.
+ */
+export const trackPageView = (path: string) => {
+  window.gtag?.('event', 'page_view', {
+    page_path: path,
+    page_location: window.location.href,
+    page_title: document.title,
+  })
+}
+
 export const denyAnalyticsConsent = () => {
   window.gtag?.('consent', 'update', { analytics_storage: 'denied' })
 }

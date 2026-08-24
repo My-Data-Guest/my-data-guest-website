@@ -122,6 +122,15 @@
   display: flex;
   align-items: center;
   gap: 2px;
+  /* Both needed so an extra entry scrolls out of reach rather than being clipped
+     by the header — `min-width: 0` lets the flex item shrink in the first place. */
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.nav::-webkit-scrollbar {
+  display: none;
 }
 
 .nav a {
@@ -195,6 +204,18 @@
   background: rgba(255, 168, 46, 0.05);
 }
 
+/* Standalone routes (courses, a single course, 404): one band that has to clear
+   the fixed header itself, since there is no hero above it. */
+.page {
+  padding: calc(var(--header-height) + 48px) 0 104px;
+  background: var(--surface);
+}
+
+.page > * {
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
 /* Footer */
 .footer {
   padding: 40px 32px;
@@ -250,12 +271,25 @@
     flex-shrink: 0;
   }
 
+  /* Five entries no longer fit next to the door mark, and the brand itself links
+     home — so the Home entry goes and the rest tighten up. */
   .nav a {
-    padding: 8px 9px;
-    font-size: 14px;
+    padding: 8px 6px;
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  .band > * {
+  .nav a[data-nav-id='home'] {
+    display: none;
+  }
+
+  .band > *,
+  .page > * {
     padding: 0 20px;
+  }
+
+  .page {
+    padding: calc(var(--header-height) + 24px) 0 72px;
   }
 }

@@ -11,6 +11,8 @@ export interface DocumentHeadOptions {
   imageAlt?: string
   url?: string
   type?: 'website' | 'article' | 'profile'
+  /** Keeps thin or placeholder pages out of the index without hiding the links. */
+  noindex?: boolean
 }
 
 const setMeta = (attr: 'name' | 'property', key: string, content: string) => {
@@ -49,6 +51,7 @@ export const useDocumentHead = ({
   imageAlt = 'My Data Guest — AI Without the Hype',
   url = `${SITE_URL}/`,
   type = 'website',
+  noindex = false,
 }: DocumentHeadOptions) => {
   useEffect(() => {
     const fullTitle = title.includes('My Data Guest') ? title : `${title} | My Data Guest`
@@ -58,7 +61,11 @@ export const useDocumentHead = ({
 
     setMeta('name', 'description', description)
     setMeta('name', 'author', 'Alessandro Romano, Rosaria Silipo')
-    setMeta('name', 'robots', 'index, follow, max-image-preview:large, max-snippet:-1')
+    setMeta(
+      'name',
+      'robots',
+      noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'
+    )
     setCanonical(url)
 
     setMeta('property', 'og:title', fullTitle)
@@ -75,5 +82,5 @@ export const useDocumentHead = ({
     setMeta('name', 'twitter:description', description)
     setMeta('name', 'twitter:image', imageUrl)
     setMeta('name', 'twitter:image:alt', imageAlt)
-  }, [title, description, image, imageAlt, url, type])
+  }, [title, description, image, imageAlt, url, type, noindex])
 }

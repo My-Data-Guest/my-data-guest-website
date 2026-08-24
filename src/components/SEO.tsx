@@ -5,9 +5,9 @@ import { useDocumentHead, type DocumentHeadOptions } from '../hooks/useDocumentH
 /**
  * Renders nothing; syncs the document head.
  *
- * The site is a single scrolling page, so exactly one <SEO /> should be mounted
- * (in App). Mounting one per section made every section race for the same title,
- * description and canonical URL — and the last one mounted won.
+ * Exactly one <SEO /> per route — the homepage is a single scrolling document, so
+ * mounting one per section made every section race for the same title,
+ * description and canonical URL, and the last one mounted won.
  */
 const SEO = (props: DocumentHeadOptions) => {
   useDocumentHead(props)

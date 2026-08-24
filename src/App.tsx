@@ -1,13 +1,15 @@
 // © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
-import Home from './pages/Home'
-import Podcast from './pages/Podcast'
-import Learning from './pages/Learning'
-import About from './pages/About'
+import HomePage from './pages/HomePage'
+import CoursesPage from './pages/CoursesPage'
+import CourseDetail from './pages/CourseDetail'
+import NotFound from './pages/NotFound'
 import CookieConsent from './components/CookieConsent'
-import SEO from './components/SEO'
+import Header from './components/Header'
+import ScrollToHash from './components/ScrollToHash'
 import JsonLd from './components/JsonLd'
 import {
   SpotifyIcon,
@@ -18,14 +20,7 @@ import {
 } from './components/Icons'
 import { generateSiteStructuredData, PLATFORMS } from './utils/structuredData'
 import { openCookiePreferences, readConsent } from './utils/cookiePreferences'
-import { initializeGAWithConsent, grantAnalyticsConsent } from './utils/analytics'
-
-const SECTIONS = [
-  { id: 'home', label: 'Home' },
-  { id: 'podcast', label: 'Podcast' },
-  { id: 'learning', label: 'Learning' },
-  { id: 'about', label: 'About' },
-] as const
+import { initializeGAWithConsent, grantAnalyticsConsent, trackPageView } from './utils/analytics'
 
 const FOOTER_LINKS = [
   { href: PLATFORMS.substack, label: 'Substack', Icon: SubstackIcon },
@@ -36,9 +31,10 @@ const FOOTER_LINKS = [
 ]
 
 function App() {
-  const [active, setActive] = useState<string>('home')
-  const [scrolled, setScrolled] = useState(false)
+  const { pathname } = useLocation()
   const siteStructuredData = useMemo(() => generateSiteStructuredData(), [])
+  // The gtag bootstrap already reports the first view.
+  const isFirstView = useRef(true)
 
   useEffect(() => {
     initializeGAWithConsent()
@@ -47,74 +43,33 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const sections = document.querySelectorAll<HTMLElement>('main > section[id]')
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(entry.target.id)
-        })
-      },
-      { rootMargin: '-40% 0px -55% 0px', threshold: [0, 0.25, 0.5, 1] }
-    )
-    sections.forEach((section) => observer.observe(section))
-
-    const handleScroll = () => setScrolled(window.scrollY > 50)
-    handleScroll()
-    window.addEventListener('scroll', handleScroll, { passive: true })
-
-    return () => {
-      observer.disconnect()
-      window.removeEventListener('scroll', handleScroll)
+    if (isFirstView.current) {
+      isFirstView.current = false
+      return
     }
-  }, [])
+    trackPageView(pathname)
+  }, [pathname])
 
   return (
     <div className="app">
-      <SEO
-        title="My Data Guest — AI Without the Hype"
-        description="AI without the hype. A podcast and newsletter by Alessandro Romano and Rosaria Silipo — real stories, honest conversations, and practical advice from people building with data and AI."
-      />
       <JsonLd id="site" data={siteStructuredData} />
 
       <a className="skip-link" href="#main">
         Skip to content
       </a>
 
-      <header className={`header${scrolled ? ' scrolled' : ''}`}>
-        <a className="brand" href="#home" aria-label="My Data Guest — home">
-          <img src={`${import.meta.env.BASE_URL}mark.png`} alt="" className="brand-mark" width={40} height={40} />
-          <span className="brand-name">
-            My Data <span>Guest</span>
-          </span>
-        </a>
-        <nav className="nav" aria-label="Sections">
-          {SECTIONS.map(({ id, label }) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className={active === id ? 'active' : undefined}
-              aria-current={active === id ? 'true' : undefined}
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-      </header>
+      <Header />
 
       <main className="content" id="main">
-        <section id="home" className="hero" aria-labelledby="hero-title">
-          <Home />
-        </section>
-        <section id="podcast" className="band band-b" aria-labelledby="podcast-title">
-          <Podcast />
-        </section>
-        <section id="learning" className="band band-c" aria-labelledby="learning-title">
-          <Learning />
-        </section>
-        <section id="about" className="band" aria-labelledby="about-title">
-          <About />
-        </section>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/courses" element={<CoursesPage />} />
+          <Route path="/courses/:slug" element={<CourseDetail />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </main>
+
+      <ScrollToHash />
 
       <footer className="footer">
         <ul className="footer-links">
