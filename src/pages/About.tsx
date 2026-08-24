@@ -8,9 +8,9 @@ const HOST_CARDS = [
   {
     ...HOSTS.alessandro,
     photo: 'alessandro.jpg',
-    // A one-line discipline, not a job title — `jobTitle` on HOSTS is "Co-host"
-    // for both of them, which tells a visitor nothing about the teaching.
-    role: 'Co-host · Data engineering',
+    // The line under the name. `jobTitle` on HOSTS is "Co-host" for both of them,
+    // which tells a visitor nothing about who is doing the teaching.
+    role: 'Data Scientist / AI Engineer',
     links: [
       { href: 'https://www.aromano.dev/', label: 'Website', Icon: WebsiteIcon },
       { href: 'https://www.linkedin.com/in/alessandro-romano-1990/', label: 'LinkedIn', Icon: LinkedInGlyph },
