@@ -1043,6 +1043,53 @@
   text-align: right;
 }
 
+/* The subscriber discount. Amber rather than teal: it is the one line in the card
+   that is an offer rather than a fact, and it should not read as another row. */
+.course-aside-discount {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--primary-soft-border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* Sits inside the sentence rather than under it: the ask is the last clause of
+   the offer, not a separate call to action competing with the enrol button. */
+.course-aside-discount a {
+  font-weight: 600;
+  color: var(--accent-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+.course-aside-discount a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* Stripe's button lives in a shadow root, so its own look is set in the Stripe
+   dashboard, not here. All this does is reserve the height it will occupy, so the
+   sticky card does not jump when the script resolves. */
+.stripe-buy-button[data-loading] {
+  min-height: 46px;
+}
+
+.course-aside-link {
+  font-size: var(--step--1);
+  font-weight: 500;
+  text-align: center;
+  color: var(--text-soft);
+  transition: color 0.2s var(--ease);
+}
+
+.course-aside-link:hover {
+  color: var(--primary);
+}
+
 /* Checked list for outcomes and audience. */
 .course-list {
   display: grid;
@@ -1087,7 +1134,8 @@
   gap: 12px;
 }
 
-.course-modules li {
+/* Direct children only: the topic chips inside a module are also <li>. */
+.course-modules > li {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr);
   gap: 16px;
@@ -1126,6 +1174,183 @@
   font-size: var(--step-0);
   line-height: 1.6;
   color: var(--text-muted);
+}
+
+/* ── The programme as a dated schedule ───────────────────────────────────────
+   For a live cohort each entry is a call in the calendar, so the cards become a
+   timeline: a continuous rail down the left with a node per session. The number
+   badge goes — "Lesson 2" is already spelled out in the meta row above the
+   title, and two competing ordinals is one too many. */
+.course-modules.is-schedule {
+  gap: 14px;
+}
+
+.course-modules.is-schedule > li {
+  position: relative;
+  grid-template-columns: 11px minmax(0, 1fr);
+  gap: 20px;
+}
+
+/* Each card draws the rail down to the next one, rather than one line spanning
+   the whole list: the run has to end on the last node, and only the card knows
+   where its own node sits. The last card draws nothing, so the rail stops there. */
+.course-modules.is-schedule > li:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 27px;
+  top: 38px;
+  bottom: -41px;
+  width: 1px;
+  background: var(--border-strong);
+}
+
+.course-module-marker {
+  position: relative; /* above the rail the previous card draws */
+  z-index: 1;
+  width: 11px;
+  height: 11px;
+  margin-top: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+/* Office hours are the half-hour support calls between lessons — same rail, but
+   they should not carry the visual weight of a full session. */
+.course-modules.is-schedule > li.is-office-hour {
+  background: transparent;
+  border-style: dashed;
+}
+
+li.is-office-hour .course-module-marker {
+  background: var(--bg);
+  border: 2px solid var(--border-strong);
+}
+
+li.is-office-hour .course-module-title {
+  font-size: var(--step-0);
+  font-weight: 600;
+}
+
+.course-module-when {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.course-module-label {
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary-soft-border);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+}
+
+li.is-office-hour .course-module-label {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text-soft);
+}
+
+/* What is actually covered, as chips — scannable in a way a prose list is not. */
+.course-module-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0 0;
+}
+
+.course-module-topics li {
+  display: block;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-soft);
+}
+
+/* ── What you need ───────────────────────────────────────────────────────────
+   The one block on the page that has to survive skimming: someone who misses it
+   spends the first session installing Python instead of building. So it is a
+   single panel with an amber edge rather than another checked list, which is the
+   pattern used for the parts you can safely read later. */
+.course-requirements {
+  padding: clamp(20px, 2.5vw, 26px);
+  border: 1px solid var(--primary-soft-border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+}
+
+.course-requirements-callout {
+  margin: 0;
+  font-size: var(--step-0);
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.course-requirements-callout strong {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-text);
+}
+
+.course-requirements-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--primary-soft-border);
+}
+
+.course-requirements-list li {
+  position: relative;
+  padding-left: 20px;
+  font-size: var(--step--1);
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.course-requirements-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 8px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Closes on what is handled for you, so the list reads as preparation and not
+   as a list of things to go and buy. */
+.course-requirements-provided {
+  margin: 16px 0 0;
+  font-size: var(--step--1);
+  line-height: 1.65;
+  color: var(--text-soft);
+}
+
+.course-schedule-note {
+  margin: -6px 0 18px;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--text-soft);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1402,8 +1627,15 @@
     text-align: left;
   }
 
-  .course-modules li {
+  .course-modules > li {
     padding: 18px;
     gap: 14px;
+  }
+
+  /* Follows the marker in from the narrower padding. */
+  .course-modules.is-schedule > li:not(:last-child)::before {
+    left: 23px;
+    top: 36px;
+    bottom: -39px;
   }
 }

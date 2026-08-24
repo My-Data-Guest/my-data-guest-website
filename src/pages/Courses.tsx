@@ -2,7 +2,7 @@
 
 import { Link } from 'react-router-dom'
 import './pages.css'
-import { COURSES, COURSE_STATUS, courseFacts, coursePath } from '../data/courses'
+import { COURSES, COURSE_STATUS, courseChips, coursePath } from '../data/courses'
 import { BuildIcon, CohortIcon, LiveIcon } from '../components/Icons'
 import { formatDate } from '../utils/text'
 
@@ -35,7 +35,7 @@ const SELLING_POINTS = [
 
 function Courses() {
   const featured = COURSES[0]
-  const facts = featured ? courseFacts(featured) : []
+  const chips = featured ? courseChips(featured) : []
   const starts = featured?.startDate ? formatDate(featured.startDate) : undefined
 
   return (
@@ -75,11 +75,11 @@ function Courses() {
             <h3 className="featured-course-title">{featured.title}</h3>
             <p className="featured-course-text">{featured.tagline}</p>
 
-            {(starts || facts.length > 0) && (
+            {(starts || chips.length > 0) && (
               <ul className="featured-course-facts">
                 {starts && <li>Starts {starts}</li>}
-                {facts.map(([label, value]) => (
-                  <li key={label}>{value}</li>
+                {chips.map((chip) => (
+                  <li key={chip}>{chip}</li>
                 ))}
               </ul>
             )}

@@ -154,6 +154,31 @@ export const generateEpisodeListStructuredData = (episodes: Episode[]) => ({
 
 const courseUrl = (course: Course) => `${SITE_URL}/courses/${course.slug}`
 
+/**
+ * The price, as an Offer.
+ *
+ * Emitted on the Course (where Google's Course Info result reads it) and on the
+ * CourseInstance (where the vocabulary says it belongs), so both consumers find
+ * it. The subscriber discount is deliberately left out: it is conditional, and a
+ * price in the search result that most visitors cannot get is worse than none.
+ */
+const courseOffer = (course: Course) =>
+  course.priceAmount
+    ? [
+        {
+          '@type': 'Offer',
+          price: course.priceAmount,
+          priceCurrency: course.priceCurrency ?? 'EUR',
+          category: 'Paid',
+          availability:
+            course.status === 'enrolling'
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/PreOrder',
+          ...(course.registrationUrl ? { url: course.registrationUrl } : {}),
+        },
+      ]
+    : undefined
+
 const courseEntity = (course: Course) => ({
   '@type': 'Course',
   '@id': `${courseUrl(course)}#course`,
@@ -164,6 +189,7 @@ const courseEntity = (course: Course) => ({
   provider: { '@id': ORGANIZATION_ID },
   ...(course.image ? { image: `${SITE_URL}${course.image}` } : {}),
   ...(course.level ? { educationalLevel: course.level } : {}),
+  ...(courseOffer(course) ? { offers: courseOffer(course) } : {}),
   // Courses run as live online cohorts, so each one has a dated instance rather
   // than being self-paced. Only emitted once the dates are known.
   ...(course.startDate
@@ -173,7 +199,15 @@ const courseEntity = (course: Course) => ({
             '@type': 'CourseInstance',
             courseMode: 'Online',
             startDate: course.startDate,
+            ...(course.endDate ? { endDate: course.endDate } : {}),
             ...(course.duration ? { courseWorkload: course.duration } : {}),
+            ...(course.seats ? { maximumAttendeeCapacity: course.seats } : {}),
+            instructor: { '@id': personId('alessandro') },
+            // The per-session dates are deliberately not marked up as Schedules.
+            // A Schedule wants a repeat rule, and six one-off calls would each be
+            // a half-specified object that nothing consumes; the dates are in the
+            // page as <time> elements instead.
+            ...(courseOffer(course) ? { offers: courseOffer(course) } : {}),
           },
         ],
       }
