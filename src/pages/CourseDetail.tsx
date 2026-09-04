@@ -9,8 +9,11 @@ import {
   COURSE_STATUS,
   coursePath,
   courseFacts,
+  daysUntilEnrolmentCloses,
+  displayStatus,
   getCourse,
   getRenamedCourse,
+  isEnrolmentClosed,
   isScheduled,
   type Course,
 } from '../data/courses'
@@ -22,6 +25,14 @@ const SESSION_DATE: Intl.DateTimeFormatOptions = {
   weekday: 'short',
   day: 'numeric',
   month: 'short',
+}
+
+/** The deadline is a date people put in a calendar, so it gets the weekday too. */
+const DEADLINE_DATE: Intl.DateTimeFormatOptions = {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
 }
 
 /**
@@ -45,7 +56,7 @@ function CourseDetail() {
   // Unknown slug: send visitors to the catalogue rather than a dead end.
   if (!course) return <Navigate to="/courses" replace />
 
-  const status = COURSE_STATUS[course.status]
+  const status = COURSE_STATUS[displayStatus(course)]
   const facts = courseFacts(course)
   const starts = course.startDate ? formatDate(course.startDate) : undefined
   const ends = course.endDate ? formatDate(course.endDate) : undefined
@@ -55,6 +66,9 @@ function CourseDetail() {
   const hasBody = !isPlaceholder || Boolean(course.audience)
   // A dated programme is a schedule: the calls get a timeline, not a numbered list.
   const scheduled = isScheduled(course)
+  // Past the cut-off, the page stops selling: the banner says so and the checkout
+  // is not rendered at all, so Stripe's script is never even fetched.
+  const closed = isEnrolmentClosed(course)
 
   return (
     <section className="page" aria-labelledby="course-title">
@@ -74,6 +88,10 @@ function CourseDetail() {
             <span aria-hidden="true">←</span> All courses
           </Link>
         </p>
+
+        {/* Above the title, because a deadline that appears below the fold is a
+            deadline half the visitors meet after it has passed. */}
+        {course.enrolmentDeadline && <EnrolmentDeadline course={course} closed={closed} />}
 
         <div className="course-hero">
           <div className="course-hero-meta">
@@ -297,7 +315,16 @@ function CourseDetail() {
           )}
 
           <aside className="course-aside" aria-label="Enrolment">
-            {course.registrationUrl ? (
+            {closed ? (
+              <>
+                <h2 className="course-aside-title">Enrolment has closed</h2>
+                <p className="course-aside-text">
+                  This cohort is settled and checkout is closed. The next one is announced in the
+                  newsletter before anywhere else &mdash; that is where the dates and the
+                  early-bird window go first.
+                </p>
+              </>
+            ) : course.registrationUrl ? (
               <>
                 <h2 className="course-aside-title">Ready to join?</h2>
                 {/* The seat count is the row directly below, so this sells the
@@ -330,8 +357,9 @@ function CourseDetail() {
             )}
 
             {/* The discount is claimed by asking, so it carries its own contact
-                link — the main button will point at a checkout, not at us. */}
-            {course.priceNote && (
+                link — the main button will point at a checkout, not at us. Gone
+                once enrolment closes: an offer nobody can take is just noise. */}
+            {course.priceNote && !closed && (
               <p className="course-aside-discount">
                 {course.priceNote}{' '}
                 <a href={PLATFORMS.linkedin} target="_blank" rel="noopener noreferrer">
@@ -340,7 +368,25 @@ function CourseDetail() {
               </p>
             )}
 
-            {course.registrationUrl ? (
+            {closed ? (
+              <>
+                {/* Dead on purpose, and still shown: a card that simply lost its
+                    button reads as a page that failed to load. This one states
+                    that the door is shut, and cannot be clicked, tabbed to or
+                    submitted — there is no checkout mounted behind it. */}
+                <button type="button" className="btn accent block" disabled>
+                  Enrolment closed
+                </button>
+                <a
+                  href={PLATFORMS.substack}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn primary block"
+                >
+                  Get the next cohort first
+                </a>
+              </>
+            ) : course.registrationUrl ? (
               <>
                 {course.stripeBuyButtonId ? (
                   <StripeBuyButton
@@ -392,6 +438,58 @@ function CourseDetail() {
     </section>
   )
 }
+
+/**
+ * The enrolment deadline, as a banner across the top of the page.
+ *
+ * Loud on purpose — it is the one thing on the page that expires, and it changes
+ * what a visitor should do today. Amber while the window is open, and it flips to
+ * a plain closed notice the moment the date passes, so the same component never
+ * leaves a stale "seats available" claim behind.
+ */
+const EnrolmentDeadline = ({ course, closed }: { course: Course; closed: boolean }) => {
+  // Formatted from local noon, not from the bare date: 'YYYY-MM-DD' is parsed as
+  // UTC midnight, which prints as the day before anywhere west of Greenwich. A
+  // deadline shown a day early is the one date on the page that must not drift.
+  const date = course.enrolmentDeadline
+    ? formatDate(`${course.enrolmentDeadline}T12:00:00`, DEADLINE_DATE)
+    : undefined
+  if (!date) return null
+
+  const daysLeft = daysUntilEnrolmentCloses(course)
+
+  if (closed) {
+    return (
+      <p className="course-deadline is-closed" role="status">
+        <span className="course-deadline-text">
+          <strong>Enrolment for this cohort is closed.</strong> Applications shut on{' '}
+          <time dateTime={course.enrolmentDeadline}>{date}</time>, and the seats are taken. The next
+          cohort is announced in the newsletter first.
+        </span>
+      </p>
+    )
+  }
+
+  return (
+    <p className="course-deadline" role="status">
+      <span className="course-deadline-pulse" aria-hidden="true" />
+      <span className="course-deadline-text">
+        <strong>
+          Applications close on <time dateTime={course.enrolmentDeadline}>{date}</time>.
+        </strong>{' '}
+        After that the checkout comes down and this cohort is shut &mdash; there is no late
+        enrolment, because the group has to be set before Lesson 1.
+      </span>
+      {daysLeft !== undefined && (
+        <span className="course-deadline-count">{countdown(daysLeft)}</span>
+      )}
+    </p>
+  )
+}
+
+/** "Closes today" beats "0 days left", and "1 days left" is not a sentence. */
+const countdown = (days: number) =>
+  days === 0 ? 'Closes today' : days === 1 ? '1 day left' : `${days} days left`
 
 /**
  * The site's own enrol button.

@@ -81,6 +81,16 @@ export interface Course {
   startDate?: string
   /** ISO date (YYYY-MM-DD) of the last session, when the run is bounded. */
   endDate?: string
+  /**
+   * Last day enrolment is accepted (ISO YYYY-MM-DD), inclusive.
+   *
+   * A cohort needs a cut-off: people have to install Python, the group has to be
+   * known, and a seat sold the night before Lesson 1 serves nobody. Setting this
+   * puts the date on the page as a deadline banner and — once it passes —
+   * withdraws checkout entirely rather than taking money for a course that has
+   * already started. See `isEnrolmentClosed`.
+   */
+  enrolmentDeadline?: string
   /** Path relative to the site root, or an absolute URL. */
   image?: string
   audience?: string[]
@@ -127,10 +137,18 @@ export interface Course {
   registrationLabel?: string
 }
 
-export const COURSE_STATUS: Record<CourseStatus, { label: string; className: string }> = {
+/**
+ * The badge as shown, which is not always the stored status: an enrolling course
+ * whose deadline has passed is closed, and nothing needs to be edited by hand on
+ * the day for the site to say so. See `displayStatus`.
+ */
+export type DisplayStatus = CourseStatus | 'closed'
+
+export const COURSE_STATUS: Record<DisplayStatus, { label: string; className: string }> = {
   'coming-soon': { label: 'Coming soon', className: 'tag-soon' },
   enrolling: { label: 'Enrolling now', className: 'tag-open' },
   live: { label: 'Running now', className: 'tag-live' },
+  closed: { label: 'Enrolment closed', className: 'tag-closed' },
 }
 
 export const COURSES: Course[] = [
@@ -164,6 +182,9 @@ export const COURSES: Course[] = [
     seats: 20,
     startDate: '2026-09-26',
     endDate: '2026-10-07',
+    // A week before Lesson 1: long enough for the setup guide to be followed and
+    // for the cohort to be a known group rather than a moving target.
+    enrolmentDeadline: '2026-09-19',
     audience: [
       'Engineers and data people who want to build agents properly, not paste a framework tutorial.',
       'Anyone who has shipped a chatbot demo and hit the wall the moment it needed real tools, real data or real reliability.',
@@ -300,6 +321,62 @@ export const getCourse = (slug: string) => COURSES.find((course) => course.slug 
 /** The course a retired URL used to point at, so it can be redirected. */
 export const getRenamedCourse = (slug: string) =>
   COURSES.find((course) => course.previousSlugs?.includes(slug))
+
+/**
+ * The instant enrolment closes: the end of the deadline day, as lived by the
+ * instructor.
+ *
+ * Pinned to +02:00 rather than the visitor's clock so the door shuts at the same
+ * moment for everyone — otherwise "closes on the 19th" would mean eleven hours
+ * later in Los Angeles than in Berlin, and someone would pay for a seat after
+ * the cohort was settled. The course is taught in CEST, so that is the offset the
+ * deadline is written in.
+ */
+const enrolmentClosesAt = (course: Course) =>
+  course.enrolmentDeadline ? new Date(`${course.enrolmentDeadline}T23:59:59+02:00`) : undefined
+
+/**
+ * Whether the deadline has passed.
+ *
+ * The site is static, so this is decided by the visitor's own clock — someone
+ * determined can move it and see the button again. That is fine: the button is
+ * the invitation, and the real gate is the Stripe payment link, which has to be
+ * deactivated in the dashboard when the cohort closes. This stops the honest
+ * visitor from paying for a course that has started; it is not a security
+ * boundary, and nothing here should be the only thing standing between a late
+ * payment and a refund.
+ */
+export const isEnrolmentClosed = (course: Course, now: Date = new Date()): boolean => {
+  const closes = enrolmentClosesAt(course)
+  return closes ? now.getTime() > closes.getTime() : false
+}
+
+/**
+ * Whole days left to enrol — 0 on the final day, undefined once it has passed.
+ *
+ * Counting from the closing instant rather than between calendar dates, so "1 day
+ * left" means roughly a day of real time and not "some time tomorrow, maybe".
+ */
+export const daysUntilEnrolmentCloses = (
+  course: Course,
+  now: Date = new Date()
+): number | undefined => {
+  const closes = enrolmentClosesAt(course)
+  if (!closes) return undefined
+
+  const remaining = closes.getTime() - now.getTime()
+  return remaining < 0 ? undefined : Math.floor(remaining / 86_400_000)
+}
+
+/**
+ * The badge to render.
+ *
+ * Only `enrolling` is rewritten: a course that is `live` has of course stopped
+ * taking enrolments, but "Running now" is the more useful thing to say about it,
+ * and a `coming-soon` course has no deadline to pass.
+ */
+export const displayStatus = (course: Course): DisplayStatus =>
+  course.status === 'enrolling' && isEnrolmentClosed(course) ? 'closed' : course.status
 
 /** The facts strip: label/value pairs a course actually has, in a fixed order. */
 export const courseFacts = (course: Course): [string, string][] =>

@@ -2,7 +2,7 @@
 
 import { Link } from 'react-router-dom'
 import './pages.css'
-import { COURSES, COURSE_STATUS, courseChips, coursePath } from '../data/courses'
+import { COURSES, COURSE_STATUS, courseChips, coursePath, displayStatus } from '../data/courses'
 import { BuildIcon, CohortIcon, LiveIcon } from '../components/Icons'
 import { formatDate } from '../utils/text'
 
@@ -39,6 +39,7 @@ function Courses() {
   const featured = COURSES[0]
   const chips = featured ? courseChips(featured) : []
   const starts = featured?.startDate ? formatDate(featured.startDate) : undefined
+  const featuredStatus = featured ? COURSE_STATUS[displayStatus(featured)] : undefined
 
   return (
     <div className="container">
@@ -70,9 +71,9 @@ function Courses() {
           <div className="featured-course">
             <div className="featured-course-top">
               <span className="featured-course-label">Next up</span>
-              <span className={`tag ${COURSE_STATUS[featured.status].className}`}>
-                {COURSE_STATUS[featured.status].label}
-              </span>
+              {featuredStatus && (
+                <span className={`tag ${featuredStatus.className}`}>{featuredStatus.label}</span>
+              )}
             </div>
             <h3 className="featured-course-title">{featured.title}</h3>
             <p className="featured-course-text">{featured.tagline}</p>

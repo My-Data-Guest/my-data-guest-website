@@ -7,7 +7,7 @@
 // <script type="application/ld+json"> blocks instead leaves Google to guess how
 // the organisation, website and podcast relate.
 
-import type { Course } from '../data/courses'
+import { isEnrolmentClosed, type Course } from '../data/courses'
 import type { Episode } from './rss'
 
 export const SITE_URL = 'https://mydataguest.com'
@@ -161,6 +161,9 @@ const courseUrl = (course: Course) => `${SITE_URL}/courses/${course.slug}`
  * CourseInstance (where the vocabulary says it belongs), so both consumers find
  * it. The subscriber discount is deliberately left out: it is conditional, and a
  * price in the search result that most visitors cannot get is worse than none.
+ *
+ * Once the enrolment deadline passes the offer says so, rather than leaving a
+ * "buy now" result in search pointing at a page whose button no longer works.
  */
 const courseOffer = (course: Course) =>
   course.priceAmount
@@ -170,10 +173,14 @@ const courseOffer = (course: Course) =>
           price: course.priceAmount,
           priceCurrency: course.priceCurrency ?? 'EUR',
           category: 'Paid',
-          availability:
-            course.status === 'enrolling'
+          availability: isEnrolmentClosed(course)
+            ? 'https://schema.org/OutOfStock'
+            : course.status === 'enrolling'
               ? 'https://schema.org/InStock'
               : 'https://schema.org/PreOrder',
+          ...(course.enrolmentDeadline
+            ? { availabilityEnds: `${course.enrolmentDeadline}T23:59:59+02:00` }
+            : {}),
           ...(course.registrationUrl ? { url: course.registrationUrl } : {}),
         },
       ]

@@ -1,12 +1,12 @@
 // © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
 import { Link } from 'react-router-dom'
-import { COURSE_STATUS, courseChips, coursePath, type Course } from '../data/courses'
+import { COURSE_STATUS, courseChips, coursePath, displayStatus, type Course } from '../data/courses'
 import { formatDate } from '../utils/text'
 
 /** One course, as shown in the homepage teaser and on the courses index. */
 const CourseCard = ({ course }: { course: Course }) => {
-  const status = COURSE_STATUS[course.status]
+  const status = COURSE_STATUS[displayStatus(course)]
   const chips = courseChips(course)
   const starts = course.startDate ? formatDate(course.startDate) : undefined
 
