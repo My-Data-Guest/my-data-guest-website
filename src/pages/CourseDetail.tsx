@@ -6,6 +6,7 @@ import SEO from '../components/SEO'
 import JsonLd from '../components/JsonLd'
 import StripeBuyButton from '../components/StripeBuyButton'
 import {
+  activeEarlyBird,
   COURSE_STATUS,
   coursePath,
   courseFacts,
@@ -34,6 +35,9 @@ const DEADLINE_DATE: Intl.DateTimeFormatOptions = {
   month: 'long',
   year: 'numeric',
 }
+
+/** Short enough for a tag: "17 Sep". */
+const SHORT_DATE: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short' }
 
 /**
  * One course page.
@@ -69,6 +73,8 @@ function CourseDetail() {
   // Past the cut-off, the page stops selling: the banner says so and the checkout
   // is not rendered at all, so Stripe's script is never even fetched.
   const closed = isEnrolmentClosed(course)
+  // Undefined once the code expires, which is what takes the offer off the page.
+  const earlyBird = activeEarlyBird(course)
 
   return (
     <section className="page" aria-labelledby="course-title">
@@ -96,6 +102,14 @@ function CourseDetail() {
         <div className="course-hero">
           <div className="course-hero-meta">
             <span className={`tag ${status.className}`}>{status.label}</span>
+            {/* The offer, next to the status rather than only down in the card:
+                on a phone the enrolment card sits below the whole programme, and
+                half price is not a thing to find on the way out. */}
+            {earlyBird && (
+              <span className="tag tag-early">
+                {earlyBird.discount} off until {formatDate(earlyBird.until, SHORT_DATE)}
+              </span>
+            )}
             {starts && ends ? (
               <span>
                 <time dateTime={course.startDate}>{starts}</time>
@@ -356,6 +370,10 @@ function CourseDetail() {
               </dl>
             )}
 
+            {/* Directly under the price row it halves, and above the subscriber
+                discount: while it runs it is the better of the two offers. */}
+            {earlyBird && <EarlyBird course={course} earlyBird={earlyBird} />}
+
             {/* The discount is claimed by asking, so it carries its own contact
                 link — the main button will point at a checkout, not at us. Gone
                 once enrolment closes: an offer nobody can take is just noise. */}
@@ -437,6 +455,52 @@ function CourseDetail() {
       </div>
     </section>
   )
+}
+
+/**
+ * The early-bird offer, in the enrolment card.
+ *
+ * Leads with the price rather than the percentage — "€150" is the number someone
+ * decides on, and the struck-through €300 does the arithmetic for them. The code
+ * is set in monospace because it has to be typed into Stripe's checkout by hand,
+ * and an I/l mix-up there costs a sale.
+ *
+ * Rendering this is `activeEarlyBird`'s decision, not this component's: it is
+ * mounted only while the offer stands.
+ */
+const EarlyBird = ({
+  course,
+  earlyBird,
+}: {
+  course: Course
+  earlyBird: NonNullable<Course['earlyBird']>
+}) => (
+  <div className="course-early-bird">
+    <p className="course-early-bird-head">
+      <span className="course-early-bird-flag">Early bird</span>
+      <span className="course-early-bird-price">
+        {earlyBird.price}
+        {course.price && <s>{course.price}</s>}
+      </span>
+    </p>
+    <p className="course-early-bird-text">
+      <strong>{earlyBird.discount} off</strong> if you enrol now. Enter{' '}
+      <code className="course-early-bird-code">{earlyBird.code}</code> at checkout.
+    </p>
+    {/* The clock is the whole point of the offer, so the closing time is spelled
+        out to the hour and stated in the timezone it means. */}
+    <p className="course-early-bird-until">
+      Ends <time dateTime={`${earlyBird.until}+02:00`}>{earlyBirdEnds(earlyBird)}</time>.
+      {/* Only worth saying where there is a second code to be confused with. */}
+      {course.priceNote && ' Checkout takes one code, and this is the deeper of the two.'}
+    </p>
+  </div>
+)
+
+/** "Thu 17 Sep, 23:00 CEST" — the date localised, the time as written. */
+const earlyBirdEnds = (earlyBird: NonNullable<Course['earlyBird']>) => {
+  const date = formatDate(earlyBird.until, SESSION_DATE)
+  return `${date}, ${earlyBird.until.slice(11)} CEST`
 }
 
 /**

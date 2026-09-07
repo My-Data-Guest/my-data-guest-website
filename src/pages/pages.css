@@ -204,6 +204,16 @@
   color: var(--brand-950);
 }
 
+/* The early-bird flag in the hero. Teal-tinted rather than filled: the status tag
+   beside it is the filled one, and two solid badges next to each other read as a
+   pair of buttons. */
+.tag-early {
+  background: var(--primary-soft);
+  border-color: var(--primary-soft-border);
+  color: var(--primary);
+  font-weight: 600;
+}
+
 /* Outlined rather than filled: the door is shut, so the badge should recede next
    to the ones that are still an invitation. */
 .tag-closed {
@@ -1164,6 +1174,91 @@
   font-weight: 600;
   color: var(--text);
   text-align: right;
+}
+
+/* The early-bird offer: the loudest thing in the card after the button, because
+   it is the only part of the price that expires. Teal, so it does not read as a
+   second copy of the amber subscriber note directly below it. */
+.course-early-bird {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--primary-soft-border);
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+}
+
+.course-early-bird p {
+  margin: 0;
+}
+
+.course-early-bird-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.course-early-bird-flag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* The discounted price is the number the decision is made on, so it is the
+   largest thing in the block; the old one is only there to be crossed out. */
+.course-early-bird-price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--step-2);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.course-early-bird-price s {
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--text-faint);
+}
+
+.course-early-bird-text {
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.course-early-bird-text strong {
+  font-weight: 650;
+  color: var(--text);
+}
+
+/* Typed by hand into Stripe's checkout, so it is set as something to copy: mono,
+   boxed, and never allowed to break across two lines. */
+.course-early-bird-code {
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid var(--primary-soft-border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--primary);
+  white-space: nowrap;
+  user-select: all;
+}
+
+.course-early-bird-until {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-soft);
 }
 
 /* The subscriber discount. Amber rather than teal: it is the one line in the card

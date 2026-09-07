@@ -159,8 +159,10 @@ const courseUrl = (course: Course) => `${SITE_URL}/courses/${course.slug}`
  *
  * Emitted on the Course (where Google's Course Info result reads it) and on the
  * CourseInstance (where the vocabulary says it belongs), so both consumers find
- * it. The subscriber discount is deliberately left out: it is conditional, and a
- * price in the search result that most visitors cannot get is worse than none.
+ * it. Discounts are deliberately left out and the list price stands: the
+ * subscriber one is conditional, and the early-bird one expires — a crawl easily
+ * outlives a ten-day window, so quoting €150 would leave a price in search that
+ * nobody can get. Better none than one that cannot be honoured.
  *
  * Once the enrolment deadline passes the offer says so, rather than leaving a
  * "buy now" result in search pointing at a page whose button no longer works.

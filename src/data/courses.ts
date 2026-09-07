@@ -75,6 +75,30 @@ export interface Course {
   priceCurrency?: string
   /** The discount line under the price in the enrolment card. */
   priceNote?: string
+  /**
+   * A time-boxed discount code, advertised in the enrolment card until it
+   * expires and then gone from the page entirely.
+   *
+   * Unlike `priceNote`, this one is open to anyone and self-serve: the code goes
+   * straight into Stripe's checkout. It disappears on its own at `until`, so an
+   * expired offer is never left advertised — but the code itself lives in Stripe,
+   * and its redeem-by date there is what actually stops it working. Setting this
+   * without setting that date means the code keeps working after the page has
+   * stopped mentioning it.
+   */
+  earlyBird?: {
+    /** The promotion code, typed at checkout. Must exist in Stripe. */
+    code: string
+    /** How much it takes off, as shown, e.g. '50%'. */
+    discount: string
+    /** The price with the code applied, e.g. '€150'. */
+    price: string
+    /**
+     * Local date and time it stops being offered, 'YYYY-MM-DDTHH:mm', read in the
+     * timezone the course is taught in — see `enrolmentClosesAt`.
+     */
+    until: string
+  }
   /** Cohort cap. Shown as a fact, and it is the scarcity argument for enrolling. */
   seats?: number
   /** ISO date (YYYY-MM-DD) of the first session. */
@@ -179,6 +203,12 @@ export const COURSES: Course[] = [
     // Substack subscriber list before a code goes out.
     priceNote:
       '€225 for annual paying subscribers to the My Data Guest Substack — 25% off. Tell us the email address you subscribed with and we’ll send you a discount code.',
+    earlyBird: {
+      code: 'EARLYBIRD_MDG',
+      discount: '50%',
+      price: '€150',
+      until: '2026-09-17T23:00',
+    },
     seats: 20,
     startDate: '2026-09-26',
     endDate: '2026-10-07',
@@ -323,17 +353,21 @@ export const getRenamedCourse = (slug: string) =>
   COURSES.find((course) => course.previousSlugs?.includes(slug))
 
 /**
- * The instant enrolment closes: the end of the deadline day, as lived by the
- * instructor.
+ * The timezone every cut-off on a course page is written in.
  *
- * Pinned to +02:00 rather than the visitor's clock so the door shuts at the same
- * moment for everyone — otherwise "closes on the 19th" would mean eleven hours
- * later in Los Angeles than in Berlin, and someone would pay for a seat after
- * the cohort was settled. The course is taught in CEST, so that is the offset the
- * deadline is written in.
+ * Deadlines are pinned to the offset the course is taught in rather than read in
+ * the visitor's own — otherwise "closes on the 19th" would mean eleven hours
+ * later in Los Angeles than in Berlin, and someone would pay for a seat after the
+ * cohort was settled, or redeem an expired code the morning after. Sessions are
+ * taught at CEST, so that is the offset.
  */
+const COURSE_UTC_OFFSET = '+02:00'
+
+/** The instant enrolment closes: the end of the deadline day, as lived by the instructor. */
 const enrolmentClosesAt = (course: Course) =>
-  course.enrolmentDeadline ? new Date(`${course.enrolmentDeadline}T23:59:59+02:00`) : undefined
+  course.enrolmentDeadline
+    ? new Date(`${course.enrolmentDeadline}T23:59:59${COURSE_UTC_OFFSET}`)
+    : undefined
 
 /**
  * Whether the deadline has passed.
@@ -366,6 +400,21 @@ export const daysUntilEnrolmentCloses = (
 
   const remaining = closes.getTime() - now.getTime()
   return remaining < 0 ? undefined : Math.floor(remaining / 86_400_000)
+}
+
+/**
+ * The early-bird offer, or undefined if there is nothing to advertise.
+ *
+ * Withdrawn both when the code expires and when enrolment closes: a discount on a
+ * checkout that is no longer mounted is a worse offer than no offer at all.
+ * Callers should not read `course.earlyBird` directly — going through this is what
+ * makes the code disappear on time.
+ */
+export const activeEarlyBird = (course: Course, now: Date = new Date()) => {
+  if (!course.earlyBird || isEnrolmentClosed(course, now)) return undefined
+
+  const ends = new Date(`${course.earlyBird.until}:00${COURSE_UTC_OFFSET}`)
+  return now.getTime() > ends.getTime() ? undefined : course.earlyBird
 }
 
 /**
