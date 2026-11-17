@@ -2,21 +2,17 @@
 
 /**
  * Everything the Impressum (§ 5 DDG) and the privacy policy need to know
- * about whoever runs the site. Both pages read from here, so this is the only
- * file to edit.
+ * about whoever runs the site. Both pages read from here, so this is the
+ * only file to edit.
+ *
+ * Alessandro is the sole operator: he controls the domain, hosting, code and
+ * analytics. Rosaria co-hosts the podcast and newsletter but is deliberately
+ * not listed (agreed 2026-11-17). If a course is ever sold jointly, the
+ * seller details must name both.
  *
  * Fields set to `null` are optional or not known yet and are simply not
  * shown. The Impressum is incomplete until the postal address is filled in.
  */
-export interface PostalAddress {
-  name: string
-  careOf: string | null
-  street: string | null
-  postalCode: string | null
-  city: string | null
-  country: string | null
-}
-
 export const operator = {
   name: 'Alessandro Romano',
 
@@ -39,24 +35,6 @@ export const operator = {
 }
 
 /**
- * The co-host, who runs the site together with the operator and so is named
- * in the Impressum as well. Same rules for the address as above.
- *
- * Only the Impressum lists her. The privacy policy keeps the operator as the
- * sole controller, because he alone runs the hosting and the analytics
- * account; if that changes, the policy needs a joint-controller section
- * (Art. 26 GDPR).
- */
-export const coProvider: PostalAddress = {
-  name: 'Rosaria Silipo',
-  careOf: null,
-  street: null,
-  postalCode: null,
-  city: null,
-  country: null,
-}
-
-/**
  * How long Google Analytics keeps event data. Matches GA4 Admin > Data
  * collection and modification > Data retention (2 or 14 months).
  */
@@ -65,5 +43,5 @@ export const analyticsRetentionMonths = 2
 /** Shown at the bottom of the privacy policy. Bump it whenever the text changes. */
 export const privacyLastUpdated = 'November 17, 2026'
 
-export const hasPostalAddress = (person: PostalAddress = operator) =>
-  Boolean(person.street && person.postalCode && person.city)
+export const hasPostalAddress = () =>
+  Boolean(operator.street && operator.postalCode && operator.city)

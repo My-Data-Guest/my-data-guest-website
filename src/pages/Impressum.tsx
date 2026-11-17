@@ -2,7 +2,7 @@
 
 import './pages.css'
 import SEO from '../components/SEO'
-import { coProvider, operator } from '../data/legal'
+import { operator } from '../data/legal'
 import { SITE_URL } from '../utils/structuredData'
 import OperatorAddress from '../components/OperatorAddress'
 
@@ -31,7 +31,6 @@ function Impressum() {
         <h2>Angaben gemäß § 5 DDG</h2>
         <p>My Data Guest wird betrieben von:</p>
         <OperatorAddress />
-        <OperatorAddress person={coProvider} />
 
         <h2>Kontakt</h2>
         <p>
