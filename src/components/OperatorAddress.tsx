@@ -1,28 +1,33 @@
 // © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
-import { hasPostalAddress, operator } from '../data/legal'
+import { hasPostalAddress, operator, type PostalAddress } from '../data/legal'
 
 /**
- * The site operator's postal address, as the Impressum and the privacy policy
- * print it. Until an address is set in src/data/legal.ts only the name shows.
+ * A postal address as the Impressum and the privacy policy print it, the
+ * operator's by default. Until an address is set in src/data/legal.ts only the
+ * name shows.
  */
-const OperatorAddress = () => (
+const OperatorAddress = ({ person = operator }: { person?: PostalAddress }) => (
   <address>
-    {operator.name}
-    {hasPostalAddress() && (
+    {person.name}
+    {hasPostalAddress(person) && (
       <>
         <br />
-        {operator.careOf && (
+        {person.careOf && (
           <>
-            c/o {operator.careOf}
+            c/o {person.careOf}
             <br />
           </>
         )}
-        {operator.street}
+        {person.street}
         <br />
-        {operator.postalCode} {operator.city}
-        <br />
-        {operator.country}
+        {person.postalCode} {person.city}
+        {person.country && (
+          <>
+            <br />
+            {person.country}
+          </>
+        )}
       </>
     )}
   </address>

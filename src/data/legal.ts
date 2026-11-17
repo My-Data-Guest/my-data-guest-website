@@ -8,6 +8,15 @@
  * Fields set to `null` are optional or not known yet and are simply not
  * shown. The Impressum is incomplete until the postal address is filled in.
  */
+export interface PostalAddress {
+  name: string
+  careOf: string | null
+  street: string | null
+  postalCode: string | null
+  city: string | null
+  country: string | null
+}
+
 export const operator = {
   name: 'Alessandro Romano',
 
@@ -30,6 +39,24 @@ export const operator = {
 }
 
 /**
+ * The co-host, who runs the site together with the operator and so is named
+ * in the Impressum as well. Same rules for the address as above.
+ *
+ * Only the Impressum lists her. The privacy policy keeps the operator as the
+ * sole controller, because he alone runs the hosting and the analytics
+ * account; if that changes, the policy needs a joint-controller section
+ * (Art. 26 GDPR).
+ */
+export const coProvider: PostalAddress = {
+  name: 'Rosaria Silipo',
+  careOf: null,
+  street: null,
+  postalCode: null,
+  city: null,
+  country: null,
+}
+
+/**
  * How long Google Analytics keeps event data. Matches GA4 Admin > Data
  * collection and modification > Data retention (2 or 14 months).
  */
@@ -38,5 +65,5 @@ export const analyticsRetentionMonths = 2
 /** Shown at the bottom of the privacy policy. Bump it whenever the text changes. */
 export const privacyLastUpdated = 'November 17, 2026'
 
-export const hasPostalAddress = () =>
-  Boolean(operator.street && operator.postalCode && operator.city)
+export const hasPostalAddress = (person: PostalAddress = operator) =>
+  Boolean(person.street && person.postalCode && person.city)
