@@ -124,8 +124,8 @@ function Privacy() {
         <p>
           If you email us, we use your address and message only to reply, and delete them once
           the conversation is over unless a legal retention duty applies. Emails to{' '}
-          {operator.email} are received by Cloudflare Email Routing (Cloudflare, Inc., USA,
-          certified under the EU-US Data Privacy Framework) and forwarded to our mailbox. Legal
+          {operator.email} are received by the email forwarding service of our domain registrar,
+          Namecheap, Inc. (USA), and forwarded to our mailbox. Legal
           basis: Art. 6(1)(f) GDPR, our legitimate interest in answering messages sent to us.
           Giving us your data is neither a legal nor a contractual requirement, but without a way
           to reach you we cannot reply.

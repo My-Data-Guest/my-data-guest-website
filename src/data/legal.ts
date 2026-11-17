@@ -29,7 +29,7 @@ export const operator = {
   city: null as string | null,
   country: 'Deutschland',
 
-  email: 'contact@aromano.dev',
+  email: 'contact@mydataguest.com',
 
   // Optional second fast channel besides email.
   phone: null as string | null,
