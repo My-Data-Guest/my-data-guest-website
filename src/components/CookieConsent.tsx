@@ -1,7 +1,8 @@
 // © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
 import { useCallback, useEffect, useState } from 'react'
-import { grantAnalyticsConsent, denyAnalyticsConsent } from '../utils/analytics'
+import { Link } from 'react-router-dom'
+import { loadAnalytics, disableAnalytics } from '../utils/analytics'
 import { onOpenCookiePreferences, readConsent, writeConsent } from '../utils/cookiePreferences'
 import './CookieConsent.css'
 
@@ -22,9 +23,9 @@ export default function CookieConsent() {
     writeConsent(analytics)
 
     if (analytics) {
-      grantAnalyticsConsent()
+      loadAnalytics()
     } else {
-      denyAnalyticsConsent()
+      disableAnalytics()
     }
 
     setShowBanner(false)
@@ -58,8 +59,9 @@ export default function CookieConsent() {
             <div className="cookie-consent-text">
               <h3 id="cookie-consent-title">We value your privacy</h3>
               <p>
-                We use cookies to understand how the site is used. Analytics cookies are optional and
-                stay off until you allow them.
+                With your consent we use Google Analytics to see how the site is used. It sets
+                cookies and sends data to Google, so nothing loads until you allow it. Details in
+                our <Link to="/privacy">privacy policy</Link>.
               </p>
             </div>
             <div className="cookie-consent-actions">
@@ -116,8 +118,8 @@ function CookieDetails({ onSave, onBack }: CookieDetailsProps) {
             <div>
               <h4>Analytics</h4>
               <p>
-                Help us see which episodes and articles people read, via Google Analytics with IP
-                anonymisation enabled.
+                Help us see which episodes and articles people read, via Google Analytics. Google
+                receives your IP address and device data; off unless you switch it on.
               </p>
             </div>
             <label className="toggle">

@@ -1,11 +1,12 @@
 // © 2025 Alessandro Romano — Non-Commercial use only. See LICENSE.
 
 import { useEffect, useMemo, useRef } from 'react'
-import { Link, Route, Routes, useLocation } from 'react-router-dom'
+import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import './App.css'
 import HomePage from './pages/HomePage'
 import CoursesPage from './pages/CoursesPage'
-import CourseDetail from './pages/CourseDetail'
+import Impressum from './pages/Impressum'
+import Privacy from './pages/Privacy'
 import NotFound from './pages/NotFound'
 import CookieConsent from './components/CookieConsent'
 import Header from './components/Header'
@@ -20,7 +21,7 @@ import {
 } from './components/Icons'
 import { generateSiteStructuredData, PLATFORMS } from './utils/structuredData'
 import { openCookiePreferences, readConsent } from './utils/cookiePreferences'
-import { initializeGAWithConsent, grantAnalyticsConsent, trackPageView } from './utils/analytics'
+import { loadAnalytics, trackPageView } from './utils/analytics'
 
 const FOOTER_LINKS = [
   { href: PLATFORMS.substack, label: 'Substack', Icon: SubstackIcon },
@@ -47,9 +48,8 @@ function App() {
   const isFirstView = useRef(true)
 
   useEffect(() => {
-    initializeGAWithConsent()
-
-    if (readConsent()?.analytics) grantAnalyticsConsent()
+    // Opt-in only: nothing from Google loads until the visitor has said yes.
+    if (readConsent()?.analytics) loadAnalytics()
   }, [])
 
   useEffect(() => {
@@ -74,7 +74,10 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/courses" element={<CoursesPage />} />
-          <Route path="/courses/:slug" element={<CourseDetail />} />
+          {/* The old course pages are gone; send their links to the upcoming page. */}
+          <Route path="/courses/:slug" element={<Navigate to="/courses" replace />} />
+          <Route path="/impressum" element={<Impressum />} />
+          <Route path="/privacy" element={<Privacy />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -143,9 +146,13 @@ function App() {
               <span aria-hidden="true">·</span>
               <span>All rights reserved</span>
             </p>
-            <button type="button" className="link-button" onClick={openCookiePreferences}>
-              Cookie preferences
-            </button>
+            <nav className="footer-legal" aria-label="Legal">
+              <Link to="/impressum">Impressum</Link>
+              <Link to="/privacy">Privacy</Link>
+              <button type="button" className="link-button" onClick={openCookiePreferences}>
+                Cookie preferences
+              </button>
+            </nav>
           </div>
         </div>
       </footer>

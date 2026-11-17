@@ -414,6 +414,27 @@
   text-decoration-color: currentColor;
 }
 
+/* Impressum and privacy have to be one click from every page. */
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-legal a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--inverse-border-strong);
+  transition: color 0.2s var(--ease), text-decoration-color 0.2s var(--ease);
+}
+
+.footer-legal a:hover {
+  color: var(--inverse-text);
+  text-decoration-color: currentColor;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 900px) {

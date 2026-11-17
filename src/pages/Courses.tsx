@@ -2,17 +2,14 @@
 
 import { Link } from 'react-router-dom'
 import './pages.css'
-import { COURSES, COURSE_STATUS, courseChips, coursePath, displayStatus } from '../data/courses'
 import { BuildIcon, CohortIcon, LiveIcon } from '../components/Icons'
-import { formatDate } from '../utils/text'
+import { PLATFORMS } from '../utils/structuredData'
 
 /**
  * The homepage pitch for the courses branch.
  *
- * Was three centred lines and a button. Courses are the thing being sold, so the
- * section gets the page's one high-contrast band, the reasons to buy, and the
- * featured course rendered as a real offer. The catalogue still lives on
- * /courses — everything here reads from the data, so it cannot go stale.
+ * No course is on sale right now, so the card on the right announces the next
+ * cohort as upcoming and points to the newsletter instead of a checkout.
  */
 
 const SELLING_POINTS = [
@@ -36,11 +33,6 @@ const SELLING_POINTS = [
 ]
 
 function Courses() {
-  const featured = COURSES[0]
-  const chips = featured ? courseChips(featured) : []
-  const starts = featured?.startDate ? formatDate(featured.startDate) : undefined
-  const featuredStatus = featured ? COURSE_STATUS[displayStatus(featured)] : undefined
-
   return (
     <div className="container">
       <div className="section-head">
@@ -67,36 +59,29 @@ function Courses() {
           ))}
         </ul>
 
-        {featured && (
-          <div className="featured-course">
-            <div className="featured-course-top">
-              <span className="featured-course-label">Next up</span>
-              {featuredStatus && (
-                <span className={`tag ${featuredStatus.className}`}>{featuredStatus.label}</span>
-              )}
-            </div>
-            <h3 className="featured-course-title">{featured.title}</h3>
-            <p className="featured-course-text">{featured.tagline}</p>
-
-            {(starts || chips.length > 0) && (
-              <ul className="featured-course-facts">
-                {starts && <li>Starts {starts}</li>}
-                {chips.map((chip) => (
-                  <li key={chip}>{chip}</li>
-                ))}
-              </ul>
-            )}
-
-            <div className="featured-course-actions">
-              <Link className="btn accent" to={coursePath(featured)}>
-                See the course
-              </Link>
-              <Link className="btn on-dark" to="/courses">
-                All courses
-              </Link>
-            </div>
+        <div className="featured-course">
+          <div className="featured-course-top">
+            <span className="featured-course-label">Upcoming</span>
           </div>
-        )}
+          <h3 className="featured-course-title">The next cohort is on the way</h3>
+          <p className="featured-course-text">
+            Dates and details go out through the newsletter first.
+          </p>
+
+          <div className="featured-course-actions">
+            <a
+              className="btn accent"
+              href={PLATFORMS.substack}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get notified
+            </a>
+            <Link className="btn on-dark" to="/courses">
+              Upcoming courses
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   )

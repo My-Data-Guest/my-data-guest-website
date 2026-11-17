@@ -58,7 +58,7 @@ function Home() {
 
           <div className="cta-row">
             <Link className="btn primary large" to="/courses">
-              Explore live courses
+              Upcoming courses
             </Link>
             <a className="btn large" href="#podcast">
               Listen to the podcast

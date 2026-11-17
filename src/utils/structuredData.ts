@@ -7,7 +7,6 @@
 // <script type="application/ld+json"> blocks instead leaves Google to guess how
 // the organisation, website and podcast relate.
 
-import { isEnrolmentClosed, type Course } from '../data/courses'
 import type { Episode } from './rss'
 
 export const SITE_URL = 'https://mydataguest.com'
@@ -150,97 +149,6 @@ export const generateEpisodeListStructuredData = (episodes: Episode[]) => ({
     partOfSeries: { '@id': PODCAST_ID },
     author: hostRefs,
   })),
-})
-
-const courseUrl = (course: Course) => `${SITE_URL}/courses/${course.slug}`
-
-/**
- * The price, as an Offer.
- *
- * Emitted on the Course (where Google's Course Info result reads it) and on the
- * CourseInstance (where the vocabulary says it belongs), so both consumers find
- * it. Discounts are deliberately left out and the list price stands: the
- * subscriber one is conditional, and the early-bird one expires — a crawl easily
- * outlives a ten-day window, so quoting €150 would leave a price in search that
- * nobody can get. Better none than one that cannot be honoured.
- *
- * Once the enrolment deadline passes the offer says so, rather than leaving a
- * "buy now" result in search pointing at a page whose button no longer works.
- */
-const courseOffer = (course: Course) =>
-  course.priceAmount
-    ? [
-        {
-          '@type': 'Offer',
-          price: course.priceAmount,
-          priceCurrency: course.priceCurrency ?? 'EUR',
-          category: 'Paid',
-          availability: isEnrolmentClosed(course)
-            ? 'https://schema.org/OutOfStock'
-            : course.status === 'enrolling'
-              ? 'https://schema.org/InStock'
-              : 'https://schema.org/PreOrder',
-          ...(course.enrolmentDeadline
-            ? { availabilityEnds: `${course.enrolmentDeadline}T23:59:59+02:00` }
-            : {}),
-          ...(course.registrationUrl ? { url: course.registrationUrl } : {}),
-        },
-      ]
-    : undefined
-
-const courseEntity = (course: Course) => ({
-  '@type': 'Course',
-  '@id': `${courseUrl(course)}#course`,
-  name: course.title,
-  description: course.summary ?? course.tagline,
-  url: courseUrl(course),
-  inLanguage: 'en',
-  provider: { '@id': ORGANIZATION_ID },
-  ...(course.image ? { image: `${SITE_URL}${course.image}` } : {}),
-  ...(course.level ? { educationalLevel: course.level } : {}),
-  ...(courseOffer(course) ? { offers: courseOffer(course) } : {}),
-  // Courses run as live online cohorts, so each one has a dated instance rather
-  // than being self-paced. Only emitted once the dates are known.
-  ...(course.startDate
-    ? {
-        hasCourseInstance: [
-          {
-            '@type': 'CourseInstance',
-            courseMode: 'Online',
-            startDate: course.startDate,
-            ...(course.endDate ? { endDate: course.endDate } : {}),
-            ...(course.duration ? { courseWorkload: course.duration } : {}),
-            ...(course.seats ? { maximumAttendeeCapacity: course.seats } : {}),
-            instructor: { '@id': personId('alessandro') },
-            // The per-session dates are deliberately not marked up as Schedules.
-            // A Schedule wants a repeat rule, and six one-off calls would each be
-            // a half-specified object that nothing consumes; the dates are in the
-            // page as <time> elements instead.
-            ...(courseOffer(course) ? { offers: courseOffer(course) } : {}),
-          },
-        ],
-      }
-    : {}),
-})
-
-/** The courses index: one ItemList pointing at each course page. */
-export const generateCourseListStructuredData = (courses: Course[]) => ({
-  '@context': 'https://schema.org',
-  '@type': 'ItemList',
-  '@id': `${SITE_URL}/courses#courses`,
-  name: 'My Data Guest courses',
-  itemListElement: courses.map((course, index) => ({
-    '@type': 'ListItem',
-    position: index + 1,
-    url: courseUrl(course),
-    item: courseEntity(course),
-  })),
-})
-
-/** A single course page. Placeholder courses skip this — see CourseDetail. */
-export const generateCourseStructuredData = (course: Course) => ({
-  '@context': 'https://schema.org',
-  ...courseEntity(course),
 })
 
 function toIsoDate(value: string): string | undefined {

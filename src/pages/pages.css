@@ -1964,3 +1964,64 @@ li.is-office-hour .course-module-label {
     bottom: -39px;
   }
 }
+
+/* ── Legal pages (Impressum, privacy) ────────────────────────────────────── */
+
+/* Long-form legal text at a readable measure. The section-title stays the
+   page heading; clause headings are scaled well below it. */
+.legal-prose {
+  max-width: var(--measure);
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.legal-prose .section-title {
+  margin: 12px 0 8px;
+  color: var(--text);
+}
+
+.legal-prose h2 {
+  margin: 40px 0 12px;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.legal-prose p,
+.legal-prose address,
+.legal-prose ul {
+  margin: 0 0 14px;
+}
+
+.legal-prose address {
+  font-style: normal;
+}
+
+.legal-prose ul {
+  padding-left: 20px;
+}
+
+.legal-prose li {
+  margin-bottom: 6px;
+}
+
+.legal-prose a {
+  color: var(--primary);
+  overflow-wrap: anywhere;
+}
+
+.legal-inline-button {
+  padding: 0;
+  font: inherit;
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.legal-prose .legal-updated {
+  margin-top: 40px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-faint);
+}
